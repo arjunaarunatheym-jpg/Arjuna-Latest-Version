@@ -152,27 +152,33 @@ backend:
 
   - task: "GET endpoint for available tests by session"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "New endpoint GET /api/sessions/{session_id}/tests/available. Returns tests participant can take based on participant_access. Filters out completed tests. Excludes correct answers from response."
+      - working: true
+        agent: "testing"
+        comment: "✅ GET /api/sessions/{session_id}/tests/available endpoint fully tested and working. Fixed Pydantic model attribute access issue. Correctly filters available tests based on participant_access (can_access_pre_test/can_access_post_test). Excludes completed tests from results. Properly removes correct answers from response for security. Returns 403 for non-participants. All functionality and security tests passed."
 
   - task: "GET endpoint for test result details"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "New endpoint GET /api/tests/results/{result_id}. Returns detailed test result with questions and correct answers for review."
+      - working: true
+        agent: "testing"
+        comment: "✅ GET /api/tests/results/{result_id} endpoint fully tested and working. Returns detailed test results with complete question data including correct answers. Participants can only access their own results (403 for others). Returns 404 for non-existent results. Includes test_questions array with all question details and correct answers for review. All security and functionality tests passed."
 
 frontend:
   - task: "Test Management UI - Add/Edit/Delete Questions"
