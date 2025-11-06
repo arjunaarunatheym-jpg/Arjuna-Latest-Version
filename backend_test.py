@@ -16,7 +16,7 @@ from datetime import datetime
 
 # Configuration
 BASE_URL = "https://trainsafe-drive.preview.emergentagent.com/api"
-ADMIN_EMAIL = "admin@gmail.com"
+ADMIN_EMAIL = "admin@example.com"
 ADMIN_PASSWORD = "admin123"
 
 class TestRunner:
