@@ -103,27 +103,45 @@ const ParticipantDashboard = ({ user, onLogout }) => {
       const response = await axiosInstance.post(`/certificates/generate/${sessionId}/${user.id}`);
       const certificateId = response.data.certificate_id;
       
-      // Use authenticated download endpoint to trigger proper file download
-      const downloadResponse = await axiosInstance.get(`/certificates/download/${certificateId}`, {
-        responseType: 'blob'
+      // Get auth token
+      const token = localStorage.getItem('token');
+      
+      // Create a temporary form to submit with auth header via fetch
+      const downloadResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/certificates/download/${certificateId}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       });
       
-      // Create blob URL and trigger download
-      const blob = new Blob([downloadResponse.data], {
-        type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-      });
+      if (!downloadResponse.ok) {
+        throw new Error('Download failed');
+      }
+      
+      // Get the blob from response
+      const blob = await downloadResponse.blob();
+      
+      // Create download link with blob URL
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
       link.download = `certificate_${sessionId}.docx`;
+      link.style.display = 'none';
       document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
       
-      toast.success("Certificate downloaded successfully!");
+      // Trigger download
+      link.click();
+      
+      // Cleanup after a delay to ensure download starts
+      setTimeout(() => {
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }, 100);
+      
+      toast.success("Certificate downloaded! Check your Downloads folder.");
     } catch (error) {
-      toast.error(error.response?.data?.detail || "Failed to generate certificate");
+      console.error('Download error:', error);
+      toast.error(error.response?.data?.detail || "Failed to download certificate. Please try again.");
     }
   };
 
