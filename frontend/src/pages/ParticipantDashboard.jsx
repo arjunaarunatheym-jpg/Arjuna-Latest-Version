@@ -405,15 +405,26 @@ const ParticipantDashboard = ({ user, onLogout }) => {
                                 </Button>
                               )}
                               {feedbackSubmitted && (
-                                <Button
-                                  size="sm"
-                                  onClick={() => handleDownloadCertificate(session.id)}
-                                  className="bg-green-600 hover:bg-green-700"
-                                  data-testid={`certificate-button-${session.id}`}
-                                >
-                                  <Award className="w-4 h-4 mr-2" />
-                                  Download Certificate
-                                </Button>
+                                <div className="flex gap-2">
+                                  <Button
+                                    size="sm"
+                                    onClick={() => handlePreviewCertificate(session.id)}
+                                    className="bg-blue-600 hover:bg-blue-700"
+                                    data-testid={`preview-certificate-button-${session.id}`}
+                                  >
+                                    <Eye className="w-4 h-4 mr-2" />
+                                    Preview
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    onClick={() => handleDownloadCertificate(session.id)}
+                                    className="bg-green-600 hover:bg-green-700"
+                                    data-testid={`certificate-button-${session.id}`}
+                                  >
+                                    <Download className="w-4 h-4 mr-2" />
+                                    Download
+                                  </Button>
+                                </div>
                               )}
                               {feedbackSubmitted && (
                                 <span className="text-xs text-green-700 font-semibold">✓ Feedback Submitted</span>
