@@ -13,6 +13,7 @@ import TestResults from "./pages/TestResults";
 import ResultsSummary from "./pages/ResultsSummary";
 import FeedbackForm from "./pages/FeedbackForm";
 import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from "./context/ThemeContext";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 export const API = `${BACKEND_URL}/api`;
