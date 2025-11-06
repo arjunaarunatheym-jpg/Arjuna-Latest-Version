@@ -238,9 +238,9 @@ const Settings = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Palette className="w-5 h-5" />
-            Theme Colors
+            Dashboard Theme Colors
           </CardTitle>
-          <CardDescription>Customize the application color scheme</CardDescription>
+          <CardDescription>Set your corporate colors for the dashboard and login page</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
