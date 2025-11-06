@@ -427,6 +427,442 @@ class TestRunner:
         except Exception as e:
             self.log(f"❌ Unauthenticated test creation error: {str(e)}", "ERROR")
             return False
+
+    # ============ PHASE 1 PARTICIPANT TEST-TAKING ENDPOINTS ============
+    
+    def create_company_and_session(self):
+        """Create a company and session for participant testing"""
+        self.log("Creating company and session for participant testing...")
+        
+        if not self.admin_token or not self.test_program_id:
+            self.log("❌ Missing admin token or program ID", "ERROR")
+            return False
+            
+        headers = {'Authorization': f'Bearer {self.admin_token}'}
+        
+        # Create company first
+        company_data = {
+            "name": "Test Company for Participant Testing"
+        }
+        
+        try:
+            response = self.session.post(f"{BASE_URL}/companies", json=company_data, headers=headers)
+            
+            if response.status_code == 200:
+                company_id = response.json()['id']
+                self.log(f"✅ Company created successfully. ID: {company_id}")
+            else:
+                self.log(f"❌ Company creation failed: {response.status_code} - {response.text}", "ERROR")
+                return False
+                
+        except Exception as e:
+            self.log(f"❌ Company creation error: {str(e)}", "ERROR")
+            return False
+        
+        # Get participant ID
+        try:
+            response = self.session.get(f"{BASE_URL}/users?role=participant", headers=headers)
+            if response.status_code == 200:
+                participants = response.json()
+                if participants:
+                    self.participant_id = participants[0]['id']
+                    self.log(f"✅ Found participant ID: {self.participant_id}")
+                else:
+                    self.log("❌ No participants found", "ERROR")
+                    return False
+            else:
+                self.log(f"❌ Failed to get participants: {response.status_code}", "ERROR")
+                return False
+        except Exception as e:
+            self.log(f"❌ Error getting participants: {str(e)}", "ERROR")
+            return False
+        
+        # Create session with participant
+        session_data = {
+            "name": "Test Session for Participant Testing",
+            "program_id": self.test_program_id,
+            "company_id": company_id,
+            "location": "Test Location",
+            "start_date": "2024-01-01",
+            "end_date": "2024-01-31",
+            "participant_ids": [self.participant_id]
+        }
+        
+        try:
+            response = self.session.post(f"{BASE_URL}/sessions", json=session_data, headers=headers)
+            
+            if response.status_code == 200:
+                self.session_id = response.json()['id']
+                self.log(f"✅ Session created successfully. ID: {self.session_id}")
+                return True
+            else:
+                self.log(f"❌ Session creation failed: {response.status_code} - {response.text}", "ERROR")
+                return False
+                
+        except Exception as e:
+            self.log(f"❌ Session creation error: {str(e)}", "ERROR")
+            return False
+    
+    def set_participant_access(self):
+        """Set participant access to allow pre-test"""
+        self.log("Setting participant access to allow pre-test...")
+        
+        if not self.admin_token or not self.participant_id or not self.session_id:
+            self.log("❌ Missing admin token, participant ID, or session ID", "ERROR")
+            return False
+            
+        headers = {'Authorization': f'Bearer {self.admin_token}'}
+        
+        access_data = {
+            "participant_id": self.participant_id,
+            "session_id": self.session_id,
+            "can_access_pre_test": True
+        }
+        
+        try:
+            response = self.session.post(f"{BASE_URL}/participant-access/update", json=access_data, headers=headers)
+            
+            if response.status_code == 200:
+                self.log("✅ Participant access updated successfully")
+                return True
+            else:
+                self.log(f"❌ Participant access update failed: {response.status_code} - {response.text}", "ERROR")
+                return False
+                
+        except Exception as e:
+            self.log(f"❌ Participant access update error: {str(e)}", "ERROR")
+            return False
+    
+    def test_get_available_tests_as_participant(self):
+        """Test GET /api/sessions/{session_id}/tests/available as participant"""
+        self.log("Testing GET /api/sessions/{session_id}/tests/available as participant...")
+        
+        if not self.participant_token or not self.session_id:
+            self.log("❌ Missing participant token or session ID", "ERROR")
+            return False
+            
+        headers = {'Authorization': f'Bearer {self.participant_token}'}
+        
+        try:
+            response = self.session.get(f"{BASE_URL}/sessions/{self.session_id}/tests/available", headers=headers)
+            
+            if response.status_code == 200:
+                data = response.json()
+                self.log(f"✅ Available tests retrieved successfully. Count: {len(data)}")
+                
+                # Verify tests don't include correct answers
+                for test in data:
+                    for question in test.get('questions', []):
+                        if 'correct_answer' in question:
+                            self.log("❌ Available tests include correct answers (security issue)", "ERROR")
+                            return False
+                
+                self.log("✅ Available tests correctly exclude correct answers")
+                
+                # Should have at least one pre-test available
+                pre_tests = [t for t in data if t.get('test_type') == 'pre']
+                if pre_tests:
+                    self.log(f"✅ Found {len(pre_tests)} pre-test(s) available")
+                    return True
+                else:
+                    self.log("❌ No pre-tests found in available tests", "ERROR")
+                    return False
+                    
+            else:
+                self.log(f"❌ Get available tests failed: {response.status_code} - {response.text}", "ERROR")
+                return False
+                
+        except Exception as e:
+            self.log(f"❌ Get available tests error: {str(e)}", "ERROR")
+            return False
+    
+    def test_get_available_tests_as_non_participant(self):
+        """Test GET /api/sessions/{session_id}/tests/available as admin (should fail with 403)"""
+        self.log("Testing GET /api/sessions/{session_id}/tests/available as admin (should fail)...")
+        
+        if not self.admin_token or not self.session_id:
+            self.log("❌ Missing admin token or session ID", "ERROR")
+            return False
+            
+        headers = {'Authorization': f'Bearer {self.admin_token}'}
+        
+        try:
+            response = self.session.get(f"{BASE_URL}/sessions/{self.session_id}/tests/available", headers=headers)
+            
+            if response.status_code == 403:
+                self.log("✅ Non-participant access correctly returned 403 Forbidden")
+                return True
+            else:
+                self.log(f"❌ Expected 403 for non-participant, got: {response.status_code} - {response.text}", "ERROR")
+                return False
+                
+        except Exception as e:
+            self.log(f"❌ Non-participant available tests error: {str(e)}", "ERROR")
+            return False
+    
+    def test_get_test_as_participant(self):
+        """Test GET /api/tests/{test_id} as participant (should not include correct answers)"""
+        self.log("Testing GET /api/tests/{test_id} as participant...")
+        
+        if not self.participant_token or not self.created_test_ids:
+            self.log("❌ Missing participant token or test IDs", "ERROR")
+            return False
+            
+        headers = {'Authorization': f'Bearer {self.participant_token}'}
+        test_id = self.created_test_ids[0] if self.created_test_ids else None
+        
+        if not test_id:
+            self.log("❌ No test ID available", "ERROR")
+            return False
+        
+        try:
+            response = self.session.get(f"{BASE_URL}/tests/{test_id}", headers=headers)
+            
+            if response.status_code == 200:
+                data = response.json()
+                self.log(f"✅ Test retrieved successfully. ID: {data.get('id')}")
+                
+                # Verify test doesn't include correct answers
+                for question in data.get('questions', []):
+                    if 'correct_answer' in question:
+                        self.log("❌ Test includes correct answers for participant (security issue)", "ERROR")
+                        return False
+                
+                self.log("✅ Test correctly excludes correct answers for participant")
+                return True
+                    
+            else:
+                self.log(f"❌ Get test as participant failed: {response.status_code} - {response.text}", "ERROR")
+                return False
+                
+        except Exception as e:
+            self.log(f"❌ Get test as participant error: {str(e)}", "ERROR")
+            return False
+    
+    def test_submit_test(self):
+        """Test POST /api/tests/submit as participant"""
+        self.log("Testing POST /api/tests/submit as participant...")
+        
+        if not self.participant_token or not self.created_test_ids or not self.session_id:
+            self.log("❌ Missing participant token, test IDs, or session ID", "ERROR")
+            return False
+            
+        headers = {'Authorization': f'Bearer {self.participant_token}'}
+        test_id = self.created_test_ids[0] if self.created_test_ids else None
+        
+        if not test_id:
+            self.log("❌ No test ID available", "ERROR")
+            return False
+        
+        # Submit test with some answers
+        submission_data = {
+            "test_id": test_id,
+            "session_id": self.session_id,
+            "answers": [2, 1, 1]  # Answers for the 3 questions
+        }
+        
+        try:
+            response = self.session.post(f"{BASE_URL}/tests/submit", json=submission_data, headers=headers)
+            
+            if response.status_code == 200:
+                data = response.json()
+                self.test_result_id = data.get('id')
+                self.log(f"✅ Test submitted successfully. Result ID: {self.test_result_id}")
+                self.log(f"   Score: {data.get('score', 0)}%")
+                self.log(f"   Passed: {data.get('passed', False)}")
+                self.log(f"   Correct Answers: {data.get('correct_answers', 0)}/{data.get('total_questions', 0)}")
+                return True
+            else:
+                self.log(f"❌ Test submission failed: {response.status_code} - {response.text}", "ERROR")
+                return False
+                
+        except Exception as e:
+            self.log(f"❌ Test submission error: {str(e)}", "ERROR")
+            return False
+    
+    def test_get_test_result_detail_as_participant(self):
+        """Test GET /api/tests/results/{result_id} as participant (own result)"""
+        self.log("Testing GET /api/tests/results/{result_id} as participant (own result)...")
+        
+        if not self.participant_token or not self.test_result_id:
+            self.log("❌ Missing participant token or test result ID", "ERROR")
+            return False
+            
+        headers = {'Authorization': f'Bearer {self.participant_token}'}
+        
+        try:
+            response = self.session.get(f"{BASE_URL}/tests/results/{self.test_result_id}", headers=headers)
+            
+            if response.status_code == 200:
+                data = response.json()
+                self.log(f"✅ Test result detail retrieved successfully. ID: {data.get('id')}")
+                self.log(f"   Score: {data.get('score', 0)}%")
+                self.log(f"   Test Type: {data.get('test_type', 'N/A')}")
+                
+                # Verify result includes test questions with correct answers
+                if 'test_questions' in data and data['test_questions']:
+                    self.log(f"✅ Test result includes {len(data['test_questions'])} questions with correct answers")
+                    
+                    # Verify correct answers are included
+                    for i, question in enumerate(data['test_questions']):
+                        if 'correct_answer' not in question:
+                            self.log(f"❌ Question {i+1} missing correct_answer in result", "ERROR")
+                            return False
+                    
+                    self.log("✅ All questions include correct answers in result")
+                    return True
+                else:
+                    self.log("❌ Test result missing test_questions array", "ERROR")
+                    return False
+                    
+            else:
+                self.log(f"❌ Get test result detail failed: {response.status_code} - {response.text}", "ERROR")
+                return False
+                
+        except Exception as e:
+            self.log(f"❌ Get test result detail error: {str(e)}", "ERROR")
+            return False
+    
+    def test_get_test_result_detail_nonexistent(self):
+        """Test GET /api/tests/results/{result_id} with non-existent result ID"""
+        self.log("Testing GET /api/tests/results/{result_id} with non-existent result...")
+        
+        if not self.participant_token:
+            self.log("❌ Missing participant token", "ERROR")
+            return False
+            
+        headers = {'Authorization': f'Bearer {self.participant_token}'}
+        fake_result_id = "non-existent-result-id-12345"
+        
+        try:
+            response = self.session.get(f"{BASE_URL}/tests/results/{fake_result_id}", headers=headers)
+            
+            if response.status_code == 404:
+                self.log("✅ Non-existent result correctly returned 404")
+                return True
+            else:
+                self.log(f"❌ Expected 404 for non-existent result, got: {response.status_code} - {response.text}", "ERROR")
+                return False
+                
+        except Exception as e:
+            self.log(f"❌ Non-existent result error: {str(e)}", "ERROR")
+            return False
+    
+    def create_second_participant(self):
+        """Create a second participant for testing access restrictions"""
+        self.log("Creating second participant for access testing...")
+        
+        if not self.admin_token:
+            self.log("❌ No admin token available", "ERROR")
+            return False
+            
+        headers = {'Authorization': f'Bearer {self.admin_token}'}
+        
+        participant_data = {
+            "email": "testparticipant2@example.com",
+            "password": "participant123",
+            "full_name": "Test Participant 2",
+            "id_number": "PART002",
+            "role": "participant",
+            "location": "Test Location"
+        }
+        
+        try:
+            response = self.session.post(f"{BASE_URL}/auth/register", json=participant_data, headers=headers)
+            
+            if response.status_code == 200:
+                self.log("✅ Second participant user created successfully")
+                return True
+            else:
+                self.log(f"❌ Second participant creation failed: {response.status_code} - {response.text}", "ERROR")
+                return False
+                
+        except Exception as e:
+            self.log(f"❌ Second participant creation error: {str(e)}", "ERROR")
+            return False
+    
+    def login_second_participant(self):
+        """Login as second participant"""
+        self.log("Logging in as second participant...")
+        
+        login_data = {
+            "email": "testparticipant2@example.com",
+            "password": "participant123"
+        }
+        
+        try:
+            response = self.session.post(f"{BASE_URL}/auth/login", json=login_data)
+            
+            if response.status_code == 200:
+                data = response.json()
+                self.second_participant_token = data['access_token']
+                self.log(f"✅ Second participant login successful. User: {data['user']['full_name']}")
+                return True
+            else:
+                self.log(f"❌ Second participant login failed: {response.status_code} - {response.text}", "ERROR")
+                return False
+                
+        except Exception as e:
+            self.log(f"❌ Second participant login error: {str(e)}", "ERROR")
+            return False
+    
+    def test_get_other_participant_result(self):
+        """Test GET /api/tests/results/{result_id} as different participant (should fail with 403)"""
+        self.log("Testing GET /api/tests/results/{result_id} as different participant (should fail)...")
+        
+        if not hasattr(self, 'second_participant_token') or not self.test_result_id:
+            self.log("❌ Missing second participant token or test result ID", "ERROR")
+            return False
+            
+        headers = {'Authorization': f'Bearer {self.second_participant_token}'}
+        
+        try:
+            response = self.session.get(f"{BASE_URL}/tests/results/{self.test_result_id}", headers=headers)
+            
+            if response.status_code == 403:
+                self.log("✅ Different participant access correctly returned 403 Forbidden")
+                return True
+            else:
+                self.log(f"❌ Expected 403 for different participant, got: {response.status_code} - {response.text}", "ERROR")
+                return False
+                
+        except Exception as e:
+            self.log(f"❌ Different participant result access error: {str(e)}", "ERROR")
+            return False
+    
+    def test_completed_test_not_in_available(self):
+        """Test that completed test no longer appears in available tests"""
+        self.log("Testing that completed test no longer appears in available tests...")
+        
+        if not self.participant_token or not self.session_id:
+            self.log("❌ Missing participant token or session ID", "ERROR")
+            return False
+            
+        headers = {'Authorization': f'Bearer {self.participant_token}'}
+        
+        try:
+            response = self.session.get(f"{BASE_URL}/sessions/{self.session_id}/tests/available", headers=headers)
+            
+            if response.status_code == 200:
+                data = response.json()
+                self.log(f"✅ Available tests retrieved after completion. Count: {len(data)}")
+                
+                # Should have no pre-tests available now (completed)
+                pre_tests = [t for t in data if t.get('test_type') == 'pre']
+                if len(pre_tests) == 0:
+                    self.log("✅ Completed pre-test correctly removed from available tests")
+                    return True
+                else:
+                    self.log(f"❌ Found {len(pre_tests)} pre-test(s) still available after completion", "ERROR")
+                    return False
+                    
+            else:
+                self.log(f"❌ Get available tests after completion failed: {response.status_code} - {response.text}", "ERROR")
+                return False
+                
+        except Exception as e:
+            self.log(f"❌ Get available tests after completion error: {str(e)}", "ERROR")
+            return False
     
     def cleanup(self):
         """Clean up created test data"""
