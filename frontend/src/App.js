@@ -133,6 +133,16 @@ function App() {
               )
             }
           />
+          <Route
+            path="/trainer"
+            element={
+              user && ["trainer", "chief_trainer", "coordinator"].includes(user.role) ? (
+                <TrainerDashboard user={user} onLogout={handleLogout} />
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          />
         </Routes>
       </BrowserRouter>
       <Toaster position="top-right" />
