@@ -18,6 +18,7 @@ class TestRunner:
     def __init__(self):
         self.admin_token = None
         self.participant_token = None
+        self.second_participant_token = None
         self.test_program_id = None
         self.created_test_ids = []
         self.session_id = None
