@@ -65,6 +65,16 @@ const AdminDashboard = ({ user, onLogout }) => {
   });
   const [coordinatorDialogOpen, setCoordinatorDialogOpen] = useState(false);
 
+  // Edit states
+  const [editingProgram, setEditingProgram] = useState(null);
+  const [editProgramDialogOpen, setEditProgramDialogOpen] = useState(false);
+  const [editingCompany, setEditingCompany] = useState(null);
+  const [editCompanyDialogOpen, setEditCompanyDialogOpen] = useState(false);
+  
+  // Delete confirmation states
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+
   useEffect(() => {
     loadData();
   }, []);
