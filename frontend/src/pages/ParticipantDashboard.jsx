@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { axiosInstance } from "../App";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { LogOut, FileText, ClipboardCheck, MessageSquare, Award } from "lucide-react";
+import { LogOut, FileText, ClipboardCheck, MessageSquare, Award, Play } from "lucide-react";
 
 const ParticipantDashboard = ({ user, onLogout }) => {
   const [sessions, setSessions] = useState([]);
