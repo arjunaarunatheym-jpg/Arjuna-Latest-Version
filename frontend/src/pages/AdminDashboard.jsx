@@ -107,6 +107,15 @@ const AdminDashboard = ({ user, onLogout }) => {
     }
   };
 
+  const loadChecklistTemplates = async () => {
+    try {
+      const response = await axiosInstance.get("/checklist-templates");
+      setChecklistTemplates(response.data);
+    } catch (error) {
+      console.error("Failed to load checklist templates:", error);
+    }
+  };
+
   const handleCreateCompany = async (e) => {
     e.preventDefault();
     try {
