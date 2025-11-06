@@ -15,6 +15,13 @@ const ParticipantDashboard = ({ user, onLogout }) => {
   const [checklists, setChecklists] = useState([]);
   const [availableTests, setAvailableTests] = useState([]);
   const [participantAccess, setParticipantAccess] = useState({});
+  const [vehicleDetails, setVehicleDetails] = useState({});
+  const [attendanceToday, setAttendanceToday] = useState({});
+  const [vehicleForm, setVehicleForm] = useState({
+    vehicle_model: "",
+    registration_number: "",
+    roadtax_expiry: ""
+  });
 
   useEffect(() => {
     loadData();
