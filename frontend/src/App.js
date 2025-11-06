@@ -139,8 +139,18 @@ function App() {
           <Route
             path="/trainer"
             element={
-              user && ["trainer", "chief_trainer", "coordinator"].includes(user.role) ? (
+              user && user.role === "trainer" ? (
                 <TrainerDashboard user={user} onLogout={handleLogout} />
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          />
+          <Route
+            path="/coordinator"
+            element={
+              user && user.role === "coordinator" ? (
+                <CoordinatorDashboard user={user} onLogout={handleLogout} />
               ) : (
                 <Navigate to="/login" replace />
               )
