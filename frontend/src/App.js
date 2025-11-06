@@ -158,6 +158,42 @@ function App() {
               )
             }
           />
+          <Route
+            path="/take-test/:testId/:sessionId"
+            element={
+              user && user.role === "participant" ? (
+                <TakeTest />
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          />
+          <Route
+            path="/test-results/:resultId"
+            element={
+              user && user.role === "participant" ? (
+                <TestResults />
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              user ? (
+                user.role === "participant" ? (
+                  <Navigate to="/participant" replace />
+                ) : user.role === "admin" ? (
+                  <Navigate to="/admin" replace />
+                ) : (
+                  <Navigate to="/" replace />
+                )
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          />
         </Routes>
       </BrowserRouter>
       <Toaster position="top-right" />
