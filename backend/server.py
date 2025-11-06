@@ -263,6 +263,23 @@ class AttendanceClockIn(BaseModel):
 class AttendanceClockOut(BaseModel):
     session_id: str
 
+# Helper function to convert DOCX to PDF
+def convert_docx_to_pdf(docx_path: Path, pdf_path: Path) -> bool:
+    """Convert DOCX to PDF using LibreOffice"""
+    try:
+        # Use LibreOffice in headless mode to convert DOCX to PDF
+        subprocess.run([
+            'libreoffice',
+            '--headless',
+            '--convert-to', 'pdf',
+            '--outdir', str(pdf_path.parent),
+            str(docx_path)
+        ], check=True, capture_output=True, timeout=30)
+        return True
+    except Exception as e:
+        logging.error(f"PDF conversion failed: {str(e)}")
+        return False
+
 class ChecklistItem(BaseModel):
     item: str
     status: str  # "good", "needs_repair"
