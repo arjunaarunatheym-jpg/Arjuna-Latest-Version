@@ -877,55 +877,6 @@ async def get_users(role: Optional[str] = None, current_user: User = Depends(get
             user['created_at'] = datetime.fromisoformat(user['created_at'])
     return users
 
-@api_router.delete("/users/{user_id}")
-async def delete_user(user_id: str, current_user: User = Depends(get_current_user)):
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Only admins can delete users")
-    
-    # Don't allow deleting yourself
-    if user_id == current_user.id:
-        raise HTTPException(status_code=400, detail="Cannot delete your own account")
-    
-    result = await db.users.delete_one({"id": user_id})
-    if result.deleted_count == 0:
-        raise HTTPException(status_code=404, detail="User not found")
-    
-    return {"message": "User deleted successfully"}
-
-@api_router.put("/users/{user_id}/activate")
-async def activate_user(user_id: str, current_user: User = Depends(get_current_user)):
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Only admins can activate users")
-    
-    result = await db.users.update_one(
-        {"id": user_id},
-        {"$set": {"is_active": True}}
-    )
-    
-    if result.modified_count == 0 and result.matched_count == 0:
-        raise HTTPException(status_code=404, detail="User not found")
-    
-    return {"message": "User activated successfully"}
-
-@api_router.put("/users/{user_id}/deactivate")
-async def deactivate_user(user_id: str, current_user: User = Depends(get_current_user)):
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Only admins can deactivate users")
-    
-    # Don't allow deactivating yourself
-    if user_id == current_user.id:
-        raise HTTPException(status_code=400, detail="Cannot deactivate your own account")
-    
-    result = await db.users.update_one(
-        {"id": user_id},
-        {"$set": {"is_active": False}}
-    )
-    
-    if result.modified_count == 0 and result.matched_count == 0:
-        raise HTTPException(status_code=404, detail="User not found")
-    
-    return {"message": "User deactivated successfully"}
-
 # Test Routes
 @api_router.post("/tests", response_model=Test)
 async def create_test(test_data: TestCreate, current_user: User = Depends(get_current_user)):
