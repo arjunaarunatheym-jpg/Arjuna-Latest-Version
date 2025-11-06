@@ -1836,6 +1836,13 @@ async def get_certificate(filename: str):
         raise HTTPException(status_code=404, detail="Certificate not found")
     return FileResponse(file_path)
 
+@api_router.get("/static/certificates_pdf/{filename}")
+async def get_certificate_pdf(filename: str):
+    file_path = CERTIFICATE_PDF_DIR / filename
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="Certificate PDF not found")
+    return FileResponse(file_path, media_type='application/pdf')
+
 @api_router.get("/static/templates/{filename}")
 async def get_template(filename: str):
     file_path = TEMPLATE_DIR / filename
