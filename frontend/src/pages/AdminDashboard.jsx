@@ -1220,7 +1220,7 @@ const AdminDashboard = ({ user, onLogout }) => {
                       <div
                         key={trainer.id}
                         data-testid={`trainer-item-${trainer.id}`}
-                        className="p-4 bg-gradient-to-r from-orange-50 to-amber-50 rounded-lg hover:bg-orange-100 transition-colors"
+                        className="p-4 bg-gradient-to-r from-orange-50 to-amber-50 rounded-lg hover:bg-orange-100 transition-colors flex justify-between items-start"
                       >
                         <div>
                           <h3 className="font-semibold text-gray-900">{trainer.full_name}</h3>
@@ -1234,6 +1234,14 @@ const AdminDashboard = ({ user, onLogout }) => {
                             </span>
                           </div>
                         </div>
+                        <Button
+                          data-testid={`delete-trainer-${trainer.id}`}
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => handleDeleteClick("trainer", trainer)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
                       </div>
                     ))
                   )}
