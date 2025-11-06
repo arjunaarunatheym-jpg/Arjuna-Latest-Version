@@ -23,6 +23,11 @@ const AdminDashboard = ({ user, onLogout }) => {
   const [users, setUsers] = useState([]);
   const [activeTab, setActiveTab] = useState("programs");
   const [selectedProgram, setSelectedProgram] = useState(null);
+  
+  // Checklist states
+  const [checklistTemplates, setChecklistTemplates] = useState([]);
+  const [checklistForm, setChecklistForm] = useState({ program_id: "", items: [""] });
+  const [checklistDialogOpen, setChecklistDialogOpen] = useState(false);
 
   const [companyName, setCompanyName] = useState("");
   const [companyDialogOpen, setCompanyDialogOpen] = useState(false);
