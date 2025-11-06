@@ -1409,6 +1409,39 @@ const AdminDashboard = ({ user, onLogout }) => {
             </Card>
           </TabsContent>
 
+          {/* Feedback Tab */}
+          <TabsContent value="feedback">
+            {!selectedProgram ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Feedback Form Management</CardTitle>
+                  <CardDescription>Select a program to manage its feedback form</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center py-12">
+                    <MessageSquare className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+                    <p className="text-gray-500">Please select a program from the Programs tab to manage its feedback form.</p>
+                    <Button
+                      className="mt-4"
+                      onClick={() => setActiveTab("programs")}
+                      variant="outline"
+                    >
+                      Go to Programs
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <FeedbackManagement 
+                program={selectedProgram} 
+                onBack={() => {
+                  setActiveTab("programs");
+                  setSelectedProgram(null);
+                }}
+              />
+            )}
+          </TabsContent>
+
           {/* Settings Tab */}
           <TabsContent value="settings">
             <Settings />
