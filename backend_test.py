@@ -708,15 +708,27 @@ class TestRunner:
             return False
             
         headers = {'Authorization': f'Bearer {self.participant_token}'}
-        test_id = self.created_test_ids[0] if self.created_test_ids else None
         
-        if not test_id:
-            self.log("❌ No test ID available", "ERROR")
+        # Find the pre-test ID (the fresh one we created)
+        pre_test_id = None
+        for test_id in self.created_test_ids:
+            try:
+                response = self.session.get(f"{BASE_URL}/tests/{test_id}", headers=headers)
+                if response.status_code == 200:
+                    test_data = response.json()
+                    if test_data.get('test_type') == 'pre':
+                        pre_test_id = test_id
+                        break
+            except:
+                continue
+        
+        if not pre_test_id:
+            self.log("❌ No pre-test ID available", "ERROR")
             return False
         
-        # Submit test with some answers
+        # Submit pre-test with some answers
         submission_data = {
-            "test_id": test_id,
+            "test_id": pre_test_id,
             "session_id": self.session_id,
             "answers": [2, 1, 1]  # Answers for the 3 questions
         }
@@ -727,17 +739,18 @@ class TestRunner:
             if response.status_code == 200:
                 data = response.json()
                 self.test_result_id = data.get('id')
-                self.log(f"✅ Test submitted successfully. Result ID: {self.test_result_id}")
+                self.log(f"✅ Pre-test submitted successfully. Result ID: {self.test_result_id}")
                 self.log(f"   Score: {data.get('score', 0)}%")
                 self.log(f"   Passed: {data.get('passed', False)}")
+                self.log(f"   Test Type: {data.get('test_type', 'N/A')}")
                 self.log(f"   Correct Answers: {data.get('correct_answers', 0)}/{data.get('total_questions', 0)}")
                 return True
             else:
-                self.log(f"❌ Test submission failed: {response.status_code} - {response.text}", "ERROR")
+                self.log(f"❌ Pre-test submission failed: {response.status_code} - {response.text}", "ERROR")
                 return False
                 
         except Exception as e:
-            self.log(f"❌ Test submission error: {str(e)}", "ERROR")
+            self.log(f"❌ Pre-test submission error: {str(e)}", "ERROR")
             return False
     
     def test_get_test_result_detail_as_participant(self):
