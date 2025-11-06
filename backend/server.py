@@ -462,6 +462,22 @@ async def get_session_participants(session_id: str, current_user: User = Depends
     
     return participants
 
+@api_router.put("/sessions/{session_id}")
+async def update_session(session_id: str, session_data: dict, current_user: User = Depends(get_current_user)):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Only admins can update sessions")
+    
+    # Update session
+    result = await db.sessions.update_one(
+        {"id": session_id},
+        {"$set": session_data}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    return {"message": "Session updated successfully"}
+
 # Participant Access Routes
 @api_router.post("/participant-access/update")
 async def update_participant_access(access_data: UpdateParticipantAccess, current_user: User = Depends(get_current_user)):
