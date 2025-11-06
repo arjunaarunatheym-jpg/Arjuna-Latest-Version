@@ -139,6 +139,29 @@ const ParticipantDashboard = ({ user, onLogout }) => {
     }
   };
 
+  const loadAttendanceToday = async (sessionId) => {
+    try {
+      const response = await axiosInstance.get(`/attendance/${sessionId}/${user.id}`);
+      if (response.data && response.data.length > 0) {
+        // Get today's date
+        const today = new Date().toISOString().split('T')[0];
+        const todayAttendance = response.data.find(a => a.date === today);
+        
+        if (todayAttendance) {
+          setAttendanceToday(prev => ({
+            ...prev,
+            [sessionId]: {
+              clock_in: !!todayAttendance.clock_in,
+              clock_out: !!todayAttendance.clock_out
+            }
+          }));
+        }
+      }
+    } catch (error) {
+      console.error("Failed to load attendance");
+    }
+  };
+
   const handleClockIn = async (sessionId) => {
     try {
       await axiosInstance.post("/attendance/clock-in", { session_id: sessionId });
