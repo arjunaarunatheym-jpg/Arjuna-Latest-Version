@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """
-Backend Test Suite for Defensive Driving Training Management System - Phase 1
-Tests the test management endpoints and participant test-taking functionality:
+Backend Test Suite for Defensive Driving Training Management System - Phase 1 + Session Delete
+Tests the test management endpoints, participant test-taking functionality, and session delete:
 - POST /api/tests, GET /api/tests/program/{program_id}, DELETE /api/tests/{test_id}
 - GET /api/sessions/{session_id}/tests/available
 - GET /api/tests/results/{result_id}
 - POST /api/tests/submit
+- DELETE /api/sessions/{session_id} (NEW: Session delete functionality)
 - Security and access control testing
 """
 
