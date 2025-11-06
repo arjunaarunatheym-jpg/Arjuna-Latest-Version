@@ -1274,6 +1274,27 @@ class TestRunner:
         if self.admin_token:
             headers = {'Authorization': f'Bearer {self.admin_token}'}
             
+            # Delete remaining sessions
+            if hasattr(self, 'second_session_delete_test_id'):
+                try:
+                    response = self.session.delete(f"{BASE_URL}/sessions/{self.second_session_delete_test_id}", headers=headers)
+                    if response.status_code == 200:
+                        self.log(f"✅ Cleaned up second session: {self.second_session_delete_test_id}")
+                    else:
+                        self.log(f"⚠️  Failed to cleanup second session: {response.status_code}", "WARNING")
+                except Exception as e:
+                    self.log(f"⚠️  Error cleaning up second session: {str(e)}", "WARNING")
+            
+            if hasattr(self, 'session_id'):
+                try:
+                    response = self.session.delete(f"{BASE_URL}/sessions/{self.session_id}", headers=headers)
+                    if response.status_code == 200:
+                        self.log(f"✅ Cleaned up session: {self.session_id}")
+                    else:
+                        self.log(f"⚠️  Failed to cleanup session: {response.status_code}", "WARNING")
+                except Exception as e:
+                    self.log(f"⚠️  Error cleaning up session: {str(e)}", "WARNING")
+            
             # Delete remaining tests
             for test_id in self.created_test_ids:
                 try:
