@@ -168,21 +168,26 @@ const Settings = () => {
               />
             </div>
           )}
-          <div className="flex gap-3">
-            <Input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setLogoFile(e.target.files[0])}
-              data-testid="logo-upload-input"
-            />
-            <Button
-              onClick={handleLogoUpload}
-              disabled={!logoFile || uploadingLogo}
-              data-testid="upload-logo-button"
-            >
-              <Upload className="w-4 h-4 mr-2" />
-              {uploadingLogo ? "Uploading..." : "Upload Logo"}
-            </Button>
+          <div className="space-y-2">
+            <div className="flex gap-3">
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setLogoFile(e.target.files[0])}
+                data-testid="logo-upload-input"
+              />
+              <Button
+                onClick={handleLogoUpload}
+                disabled={!logoFile || uploadingLogo}
+                data-testid="upload-logo-button"
+              >
+                <Upload className="w-4 h-4 mr-2" />
+                {uploadingLogo ? "Uploading..." : "Upload Logo"}
+              </Button>
+            </div>
+            <p className="text-xs text-gray-500">
+              Supported formats: JPEG, PNG, GIF, WebP | Max size: 5MB
+            </p>
           </div>
         </CardContent>
       </Card>
