@@ -16,7 +16,6 @@ import jwt
 import random
 import shutil
 from docx import Document
-from docx2pdf import convert
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
