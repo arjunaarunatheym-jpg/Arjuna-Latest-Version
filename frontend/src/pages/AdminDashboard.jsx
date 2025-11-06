@@ -388,6 +388,9 @@ const AdminDashboard = ({ user, onLogout }) => {
       } else if (type === "company") {
         await axiosInstance.delete(`/companies/${item.id}`);
         toast.success("Company deleted successfully");
+      } else if (type === "session") {
+        await axiosInstance.delete(`/sessions/${item.id}`);
+        toast.success("Session deleted successfully");
       } else if (type === "trainer" || type === "coordinator" || type === "user") {
         await axiosInstance.delete(`/users/${item.id}`);
         toast.success(`${type} deleted successfully`);
