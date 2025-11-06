@@ -571,7 +571,7 @@ async def update_participant_access(access_data: UpdateParticipantAccess, curren
     if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Only admins can update access")
     
-    access = await get_or_create_participant_access(access_data.participant_id, access_data.session_id)
+    await get_or_create_participant_access(access_data.participant_id, access_data.session_id)
     
     update_fields = {}
     if access_data.can_access_pre_test is not None:
