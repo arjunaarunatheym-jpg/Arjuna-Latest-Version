@@ -39,6 +39,10 @@ STATIC_DIR = ROOT_DIR / "static"
 STATIC_DIR.mkdir(exist_ok=True)
 LOGO_DIR = STATIC_DIR / "logos"
 LOGO_DIR.mkdir(exist_ok=True)
+CERTIFICATE_DIR = STATIC_DIR / "certificates"
+CERTIFICATE_DIR.mkdir(exist_ok=True)
+TEMPLATE_DIR = STATIC_DIR / "templates"
+TEMPLATE_DIR.mkdir(exist_ok=True)
 
 # ============ MODELS ============
 
