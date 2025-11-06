@@ -302,7 +302,7 @@ const Settings = () => {
               placeholder="Your Company Name"
               data-testid="company-name-input"
             />
-            <p className="text-xs text-gray-500 mt-1">This appears in the certificate template</p>
+            <p className="text-xs text-gray-500 mt-1">Appears on login page and in certificate placeholders</p>
           </div>
           <div>
             <Label htmlFor="footer-text">Footer Text (Optional)</Label>
