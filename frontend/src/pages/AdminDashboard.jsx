@@ -1119,15 +1119,26 @@ const AdminDashboard = ({ user, onLogout }) => {
                                 <span className="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
                                   {session.participant_ids.length} Participants
                                 </span>
-                                <Button
-                                  data-testid={`edit-session-${session.id}`}
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => handleEditSession(session)}
-                                >
-                                  <Edit className="w-4 h-4 mr-1" />
-                                  Edit
-                                </Button>
+                                <div className="flex gap-2">
+                                  <Button
+                                    data-testid={`edit-session-${session.id}`}
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => handleEditSession(session)}
+                                  >
+                                    <Edit className="w-4 h-4 mr-1" />
+                                    Edit
+                                  </Button>
+                                  <Button
+                                    data-testid={`delete-session-${session.id}`}
+                                    size="sm"
+                                    variant="destructive"
+                                    onClick={() => handleDeleteClick("session", session)}
+                                  >
+                                    <Trash2 className="w-4 h-4 mr-1" />
+                                    Delete
+                                  </Button>
+                                </div>
                               </div>
                             </div>
                           </div>
