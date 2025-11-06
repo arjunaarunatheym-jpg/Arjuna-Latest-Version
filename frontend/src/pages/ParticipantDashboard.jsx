@@ -46,9 +46,10 @@ const ParticipantDashboard = ({ user, onLogout }) => {
       loadAvailableTests(sessionsRes.data);
       loadParticipantAccess(sessionsRes.data);
       
-      // Load vehicle details for each session
+      // Load vehicle details and attendance for each session
       sessionsRes.data.forEach(session => {
         loadVehicleDetails(session.id);
+        loadAttendanceToday(session.id);
       });
     } catch (error) {
       toast.error("Failed to load dashboard data");
