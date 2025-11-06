@@ -1631,8 +1631,12 @@ async def generate_certificate(session_id: str, participant_id: str, current_use
         {"_id": 0}
     )
     
-    if not access or not access.get('feedback_submitted', False):
-        raise HTTPException(status_code=400, detail="Feedback must be submitted before generating certificate")
+    if not access:
+        # Auto-create if doesn't exist
+        access = await get_or_create_participant_access(participant_id, session_id)
+    
+    if not access.get('feedback_submitted', False):
+        raise HTTPException(status_code=400, detail="Please submit feedback first. Go to your dashboard and click 'Submit Feedback' button.")
     
     # Get participant details
     participant = await db.users.find_one({"id": participant_id}, {"_id": 0})
