@@ -213,25 +213,36 @@ const ParticipantDashboard = ({ user, onLogout }) => {
       });
       
       if (!previewResponse.ok) {
+        const errorText = await previewResponse.text();
+        console.error('Preview failed:', errorText);
         throw new Error('Preview failed');
       }
       
       // Get the blob from response (PDF)
       const blob = await previewResponse.blob();
+      console.log('Preview blob size:', blob.size, 'Type:', blob.type);
       
-      // Create blob URL and open in new tab
-      const url = window.URL.createObjectURL(blob);
-      window.open(url, '_blank');
+      // Create blob URL with PDF type
+      const pdfBlob = new Blob([blob], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(pdfBlob);
       
-      // Cleanup after a delay
+      // Open in new tab
+      const newWindow = window.open(url, '_blank');
+      
+      if (!newWindow) {
+        toast.error("Popup blocked! Please allow popups for this site.");
+        return;
+      }
+      
+      // Cleanup after delay
       setTimeout(() => {
         window.URL.revokeObjectURL(url);
-      }, 1000);
+      }, 5000);
       
       toast.success("Opening certificate preview in new tab...");
     } catch (error) {
       console.error('Preview error:', error);
-      toast.error(error.response?.data?.detail || "Failed to preview certificate");
+      toast.error(error.message || "Failed to preview certificate");
     }
   };
 
