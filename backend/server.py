@@ -118,6 +118,8 @@ class SessionCreate(BaseModel):
     end_date: str
     supervisor_ids: List[str] = []
     participant_ids: List[str] = []
+    trainer_assignments: List[dict] = []
+    coordinator_id: Optional[str] = None
 
 class ParticipantAccess(BaseModel):
     model_config = ConfigDict(extra="ignore")
