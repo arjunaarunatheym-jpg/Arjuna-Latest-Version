@@ -489,6 +489,109 @@ const AdminDashboard = ({ user, onLogout }) => {
             </Card>
           </TabsContent>
 
+          {/* Tests Tab */}
+          <TabsContent value="tests">
+            <Card>
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <CardTitle>Test Management</CardTitle>
+                    <CardDescription>
+                      {selectedProgram 
+                        ? `Manage pre and post tests for "${selectedProgram.name}"` 
+                        : "Select a program to manage its tests"}
+                    </CardDescription>
+                  </div>
+                  {selectedProgram && (
+                    <Button
+                      onClick={() => {
+                        setActiveTab("programs");
+                        setSelectedProgram(null);
+                      }}
+                      variant="outline"
+                    >
+                      Back to Programs
+                    </Button>
+                  )}
+                </div>
+              </CardHeader>
+              <CardContent>
+                {!selectedProgram ? (
+                  <div className="text-center py-12">
+                    <ClipboardList className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+                    <p className="text-gray-500">Please select a program from the Programs tab to manage its tests.</p>
+                    <Button
+                      className="mt-4"
+                      onClick={() => setActiveTab("programs")}
+                      variant="outline"
+                    >
+                      Go to Programs
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    <div className="bg-blue-50 p-4 rounded-lg">
+                      <h3 className="font-semibold text-blue-900">Selected Program: {selectedProgram.name}</h3>
+                      {selectedProgram.description && (
+                        <p className="text-blue-700 text-sm mt-1">{selectedProgram.description}</p>
+                      )}
+                      <p className="text-blue-600 text-sm mt-1">Pass Mark: {selectedProgram.pass_percentage}%</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Pre-Test Section */}
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-lg">Pre-Test Questions</CardTitle>
+                          <CardDescription>Questions given before training starts</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-4">
+                            <div className="text-center py-8 text-gray-500">
+                              <ClipboardList className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                              <p>No pre-test questions yet</p>
+                              <Button className="mt-3" size="sm">
+                                <Plus className="w-4 h-4 mr-1" />
+                                Add Pre-Test Question
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      {/* Post-Test Section */}
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-lg">Post-Test Questions</CardTitle>
+                          <CardDescription>Questions given after training completion</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-4">
+                            <div className="text-center py-8 text-gray-500">
+                              <ClipboardList className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                              <p>No post-test questions yet</p>
+                              <Button className="mt-3" size="sm">
+                                <Plus className="w-4 h-4 mr-1" />
+                                Add Post-Test Question
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+
+                    <div className="bg-yellow-50 p-4 rounded-lg">
+                      <h4 className="font-medium text-yellow-800 mb-2">Coming Soon</h4>
+                      <p className="text-yellow-700 text-sm">
+                        Full test management functionality including question creation, editing, 
+                        multiple choice options, and test scheduling will be available in the next update.
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
           {/* Companies Tab */}
           <TabsContent value="companies">
             <Card>
