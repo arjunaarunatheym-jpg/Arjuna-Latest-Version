@@ -107,39 +107,48 @@ user_problem_statement: "Defensive Driving/Riding Training Management System wit
 backend:
   - task: "DELETE endpoint for test questions"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "DELETE endpoint already implemented at line 638-648. Endpoint: DELETE /api/tests/{test_id}. Validates admin role, deletes test from database, returns success/error. Ready for testing."
+      - working: true
+        agent: "testing"
+        comment: "✅ DELETE /api/tests/{test_id} endpoint fully tested and working. Admin authentication required and enforced (403 for non-admin). Returns 200 with success message on valid deletion, 404 for non-existent tests, 403 for unauthorized access. All security and functionality tests passed."
 
   - task: "POST endpoint for creating tests"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "POST endpoint exists at line 618. Creates tests with program_id, test_type (pre/post), and questions list. Needs testing."
+      - working: true
+        agent: "testing"
+        comment: "✅ POST /api/tests endpoint fully tested and working. Successfully creates both pre-test and post-test with proper data structure (program_id, test_type, questions array). Admin authentication required and enforced. Returns 200 with created test object including generated UUID. All validation and security tests passed."
 
   - task: "GET endpoint for fetching tests by program"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "GET endpoint exists at line 630. Fetches all tests for a program. Used by frontend to load questions. Needs testing."
+      - working: true
+        agent: "testing"
+        comment: "✅ GET /api/tests/program/{program_id} endpoint fully tested and working. Successfully retrieves all tests for a given program_id. Returns array of test objects with proper structure. Authentication required. Correctly handles both pre-test and post-test retrieval. All functionality tests passed."
 
 frontend:
   - task: "Test Management UI - Add/Edit/Delete Questions"
