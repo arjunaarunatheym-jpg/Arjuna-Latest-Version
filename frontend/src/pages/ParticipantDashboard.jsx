@@ -176,19 +176,56 @@ const ParticipantDashboard = ({ user, onLogout }) => {
                   <p className="text-gray-500 text-center py-8">No sessions assigned yet</p>
                 ) : (
                   <div className="space-y-3">
-                    {sessions.map((session) => (
-                      <div
-                        key={session.id}
-                        data-testid={`participant-session-${session.id}`}
-                        className="p-4 bg-gradient-to-r from-teal-50 to-cyan-50 rounded-lg"
-                      >
-                        <h3 className="font-semibold text-gray-900">{session.name}</h3>
-                        <p className="text-sm text-gray-600 mt-1">Location: {session.location}</p>
-                        <p className="text-sm text-gray-600">
-                          {session.start_date} to {session.end_date}
-                        </p>
-                      </div>
-                    ))}
+                    {sessions.map((session) => {
+                      const access = participantAccess[session.id] || {};
+                      const feedbackSubmitted = access.feedback_submitted || false;
+                      const canAccessFeedback = access.can_access_feedback || false;
+                      
+                      return (
+                        <div
+                          key={session.id}
+                          data-testid={`participant-session-${session.id}`}
+                          className="p-4 bg-gradient-to-r from-teal-50 to-cyan-50 rounded-lg border-2 border-teal-200"
+                        >
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <h3 className="font-semibold text-gray-900">{session.name}</h3>
+                              <p className="text-sm text-gray-600 mt-1">Location: {session.location}</p>
+                              <p className="text-sm text-gray-600">
+                                {session.start_date} to {session.end_date}
+                              </p>
+                            </div>
+                            <div className="flex flex-col gap-2">
+                              {canAccessFeedback && !feedbackSubmitted && (
+                                <Button
+                                  size="sm"
+                                  onClick={() => handleFeedback(session.id)}
+                                  className="bg-yellow-600 hover:bg-yellow-700"
+                                  data-testid={`feedback-button-${session.id}`}
+                                >
+                                  <MessageSquare className="w-4 h-4 mr-2" />
+                                  Submit Feedback
+                                </Button>
+                              )}
+                              {feedbackSubmitted && (
+                                <Button
+                                  size="sm"
+                                  onClick={() => handleDownloadCertificate(session.id)}
+                                  className="bg-green-600 hover:bg-green-700"
+                                  data-testid={`certificate-button-${session.id}`}
+                                >
+                                  <Award className="w-4 h-4 mr-2" />
+                                  Download Certificate
+                                </Button>
+                              )}
+                              {feedbackSubmitted && (
+                                <span className="text-xs text-green-700 font-semibold">✓ Feedback Submitted</span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </CardContent>
