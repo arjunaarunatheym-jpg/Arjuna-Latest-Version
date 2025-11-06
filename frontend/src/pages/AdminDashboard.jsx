@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import TestManagement from "./TestManagement";
 import FeedbackManagement from "./FeedbackManagement";
 import Settings from "./Settings";
+import { useTheme } from "../context/ThemeContext";
 
 const AdminDashboard = ({ user, onLogout }) => {
   const [companies, setCompanies] = useState([]);
