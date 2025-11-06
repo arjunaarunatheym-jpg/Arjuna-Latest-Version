@@ -892,12 +892,18 @@ async def get_available_tests(session_id: str, current_user: User = Depends(get_
         if can_access and not is_completed:
             # Don't send correct answers to participant
             test_copy = test.copy()
+            questions = test['questions'].copy()
+            
+            # Shuffle post-test questions
+            if test_type == "post":
+                random.shuffle(questions)
+            
             test_copy['questions'] = [
                 {
                     'question': q['question'],
                     'options': q['options']
                 }
-                for q in test['questions']
+                for q in questions
             ]
             available_tests.append(test_copy)
     
