@@ -233,7 +233,12 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "GET endpoint for available tests by session"
+    - "GET endpoint for test result details"
+    - "Participant Test-Taking Interface"
+    - "Test Results Display"
+    - "Participant Dashboard - Test Integration"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
