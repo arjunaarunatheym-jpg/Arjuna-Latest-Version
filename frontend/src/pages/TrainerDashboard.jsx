@@ -16,10 +16,20 @@ const TrainerDashboard = ({ user, onLogout }) => {
   const loadSessions = async () => {
     try {
       const response = await axiosInstance.get("/sessions");
-      setSessions(response.data);
+      // Filter sessions where user is assigned as trainer
+      const mySessions = response.data.filter(session => 
+        session.trainer_assignments && session.trainer_assignments.some(t => t.trainer_id === user.id)
+      );
+      setSessions(mySessions);
     } catch (error) {
       toast.error("Failed to load sessions");
     }
+  };
+
+  const getMyRole = (session) => {
+    if (!session.trainer_assignments) return "Trainer";
+    const assignment = session.trainer_assignments.find(t => t.trainer_id === user.id);
+    return assignment ? (assignment.role === "chief" ? "Chief Trainer" : "Regular Trainer") : "Trainer";
   };
 
   const getRoleName = (role) => {
