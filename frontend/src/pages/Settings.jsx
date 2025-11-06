@@ -209,21 +209,26 @@ const Settings = () => {
               <p className="text-sm text-green-800">✓ Certificate template uploaded</p>
             </div>
           )}
-          <div className="flex gap-3">
-            <Input
-              type="file"
-              accept=".docx"
-              onChange={(e) => setTemplateFile(e.target.files[0])}
-              data-testid="template-upload-input"
-            />
-            <Button
-              onClick={handleTemplateUpload}
-              disabled={!templateFile || uploadingTemplate}
-              data-testid="upload-template-button"
-            >
-              <Upload className="w-4 h-4 mr-2" />
-              {uploadingTemplate ? "Uploading..." : "Upload Template"}
-            </Button>
+          <div className="space-y-2">
+            <div className="flex gap-3">
+              <Input
+                type="file"
+                accept=".docx"
+                onChange={(e) => setTemplateFile(e.target.files[0])}
+                data-testid="template-upload-input"
+              />
+              <Button
+                onClick={handleTemplateUpload}
+                disabled={!templateFile || uploadingTemplate}
+                data-testid="upload-template-button"
+              >
+                <Upload className="w-4 h-4 mr-2" />
+                {uploadingTemplate ? "Uploading..." : "Upload Template"}
+              </Button>
+            </div>
+            <p className="text-xs text-gray-500">
+              Only .docx files | Max size: 10MB
+            </p>
           </div>
         </CardContent>
       </Card>
