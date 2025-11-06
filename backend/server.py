@@ -918,10 +918,12 @@ async def get_test(test_id: str, current_user: User = Depends(get_current_user))
     if isinstance(test_doc.get('created_at'), str):
         test_doc['created_at'] = datetime.fromisoformat(test_doc['created_at'])
     
+    # Make a copy of questions for shuffling
+    questions = test_doc['questions'].copy()
+    
+    # Shuffle post-test questions for participants
     if current_user.role == "participant" and test_doc['test_type'] == "post":
-        questions = test_doc['questions']
         random.shuffle(questions)
-        test_doc['questions'] = questions
     
     # Don't send correct answers to participants before submission
     if current_user.role == "participant":
@@ -930,8 +932,10 @@ async def get_test(test_id: str, current_user: User = Depends(get_current_user))
                 'question': q['question'],
                 'options': q['options']
             }
-            for q in test_doc['questions']
+            for q in questions
         ]
+    else:
+        test_doc['questions'] = questions
     
     return test_doc
 
