@@ -102,6 +102,56 @@ const ParticipantDashboard = ({ user, onLogout }) => {
     }
   };
 
+  const handleVehicleSubmit = async (sessionId) => {
+    if (!vehicleForm.vehicle_model || !vehicleForm.registration_number || !vehicleForm.roadtax_expiry) {
+      toast.error("Please fill in all vehicle details");
+      return;
+    }
+
+    try {
+      await axiosInstance.post("/vehicle-details/submit", {
+        session_id: sessionId,
+        ...vehicleForm
+      });
+      toast.success("Vehicle details saved!");
+      loadVehicleDetails(sessionId);
+      setVehicleForm({ vehicle_model: "", registration_number: "", roadtax_expiry: "" });
+    } catch (error) {
+      toast.error("Failed to save vehicle details");
+    }
+  };
+
+  const loadVehicleDetails = async (sessionId) => {
+    try {
+      const response = await axiosInstance.get(`/vehicle-details/${sessionId}/${user.id}`);
+      if (response.data) {
+        setVehicleDetails(prev => ({ ...prev, [sessionId]: response.data }));
+      }
+    } catch (error) {
+      console.error("Failed to load vehicle details");
+    }
+  };
+
+  const handleClockIn = async (sessionId) => {
+    try {
+      await axiosInstance.post("/attendance/clock-in", { session_id: sessionId });
+      toast.success("Clocked in successfully!");
+      setAttendanceToday(prev => ({ ...prev, [sessionId]: { ...prev[sessionId], clock_in: true } }));
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to clock in");
+    }
+  };
+
+  const handleClockOut = async (sessionId) => {
+    try {
+      await axiosInstance.post("/attendance/clock-out", { session_id: sessionId });
+      toast.success("Clocked out successfully!");
+      setAttendanceToday(prev => ({ ...prev, [sessionId]: { ...prev[sessionId], clock_out: true } }));
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to clock out");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
       {/* Header */}
