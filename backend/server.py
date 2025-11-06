@@ -772,6 +772,26 @@ async def get_participant_results(participant_id: str, current_user: User = Depe
             result['submitted_at'] = datetime.fromisoformat(result['submitted_at'])
     return results
 
+@api_router.get("/tests/results/{result_id}")
+async def get_test_result_detail(result_id: str, current_user: User = Depends(get_current_user)):
+    result = await db.test_results.find_one({"id": result_id}, {"_id": 0})
+    if not result:
+        raise HTTPException(status_code=404, detail="Test result not found")
+    
+    # Participants can only see their own results
+    if current_user.role == "participant" and result['participant_id'] != current_user.id:
+        raise HTTPException(status_code=403, detail="Unauthorized")
+    
+    if isinstance(result.get('submitted_at'), str):
+        result['submitted_at'] = datetime.fromisoformat(result['submitted_at'])
+    
+    # Get the test questions with correct answers
+    test = await db.tests.find_one({"id": result['test_id']}, {"_id": 0})
+    if test:
+        result['test_questions'] = test['questions']
+    
+    return result
+
 # Checklist Template Routes
 @api_router.post("/checklist-templates", response_model=ChecklistTemplate)
 async def create_checklist_template(template_data: ChecklistTemplateCreate, current_user: User = Depends(get_current_user)):
