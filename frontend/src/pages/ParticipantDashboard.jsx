@@ -365,14 +365,27 @@ const ParticipantDashboard = ({ user, onLogout }) => {
                         data-testid={`certificate-${cert.id}`}
                         className="p-4 bg-yellow-50 rounded-lg border border-yellow-200"
                       >
-                        <div className="flex items-center gap-3">
-                          <Award className="w-8 h-8 text-yellow-600" />
-                          <div>
-                            <h3 className="font-semibold text-gray-900">Training Certificate</h3>
-                            <p className="text-sm text-gray-600">
-                              Issued: {new Date(cert.issue_date).toLocaleDateString()}
-                            </p>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <Award className="w-8 h-8 text-yellow-600" />
+                            <div>
+                              <h3 className="font-semibold text-gray-900">Training Certificate</h3>
+                              <p className="text-sm text-gray-600">
+                                Issued: {new Date(cert.issue_date).toLocaleDateString()}
+                              </p>
+                              <p className="text-sm text-gray-600">
+                                Program: {cert.program_name}
+                              </p>
+                            </div>
                           </div>
+                          <Button
+                            onClick={() => handleDownloadExistingCertificate(cert)}
+                            className="bg-yellow-600 hover:bg-yellow-700 text-white"
+                            data-testid={`download-cert-${cert.id}`}
+                          >
+                            <Download className="w-4 h-4 mr-2" />
+                            Download
+                          </Button>
                         </div>
                       </div>
                     ))}
