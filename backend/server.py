@@ -226,14 +226,22 @@ class CourseFeedback(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     participant_id: str
     session_id: str
-    rating: int
-    feedback_text: str
+    overall_rating: int
+    content_rating: int
+    trainer_rating: int
+    venue_rating: int
+    suggestions: str = ""
+    comments: str = ""
     submitted_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class FeedbackSubmit(BaseModel):
     session_id: str
-    rating: int
-    feedback_text: str
+    overall_rating: int
+    content_rating: int
+    trainer_rating: int
+    venue_rating: int
+    suggestions: str = ""
+    comments: str = ""
 
 class Certificate(BaseModel):
     model_config = ConfigDict(extra="ignore")
