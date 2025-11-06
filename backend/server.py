@@ -105,6 +105,8 @@ class Session(BaseModel):
     end_date: str
     supervisor_ids: List[str] = []
     participant_ids: List[str] = []
+    trainer_assignments: List[dict] = []  # [{trainer_id: str, role: "regular"|"chief"}]
+    coordinator_id: Optional[str] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class SessionCreate(BaseModel):
