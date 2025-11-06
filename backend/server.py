@@ -596,6 +596,17 @@ async def get_sessions(current_user: User = Depends(get_current_user)):
             session['created_at'] = datetime.fromisoformat(session['created_at'])
     return sessions
 
+@api_router.get("/sessions/{session_id}", response_model=Session)
+async def get_session(session_id: str, current_user: User = Depends(get_current_user)):
+    session = await db.sessions.find_one({"id": session_id}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    if isinstance(session.get('created_at'), str):
+        session['created_at'] = datetime.fromisoformat(session['created_at'])
+    
+    return session
+
 @api_router.get("/sessions/{session_id}/participants")
 async def get_session_participants(session_id: str, current_user: User = Depends(get_current_user)):
     if current_user.role != "admin":
