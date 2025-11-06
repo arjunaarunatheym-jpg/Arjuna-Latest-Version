@@ -1747,6 +1747,33 @@ async def get_template(filename: str):
         raise HTTPException(status_code=404, detail="Template not found")
     return FileResponse(file_path)
 
+@api_router.post("/checklist-photos/upload")
+async def upload_checklist_photo(file: UploadFile = File(...), current_user: User = Depends(get_current_user)):
+    if current_user.role != "trainer":
+        raise HTTPException(status_code=403, detail="Only trainers can upload checklist photos")
+    
+    if not file.content_type.startswith('image/'):
+        raise HTTPException(status_code=400, detail="Only image files are allowed")
+    
+    # Generate unique filename
+    file_extension = file.filename.split('.')[-1]
+    filename = f"{str(uuid.uuid4())}.{file_extension}"
+    file_path = CHECKLIST_PHOTOS_DIR / filename
+    
+    # Save file
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+    
+    photo_url = f"/api/static/checklist-photos/{filename}"
+    return {"photo_url": photo_url}
+
+@api_router.get("/static/checklist-photos/{filename}")
+async def get_checklist_photo(filename: str):
+    file_path = CHECKLIST_PHOTOS_DIR / filename
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="Photo not found")
+    return FileResponse(file_path)
+
 # Include router
 app.include_router(api_router)
 
