@@ -309,10 +309,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Admin Dashboard - Session Delete Functionality"
-    - "Participant Test-Taking Interface"
-    - "Test Results Display"
-    - "Participant Dashboard - Test Integration"
+    - "Certificate preview functionality"
+    - "Certificate preview UI integration"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
