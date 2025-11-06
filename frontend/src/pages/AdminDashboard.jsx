@@ -590,6 +590,18 @@ const AdminDashboard = ({ user, onLogout }) => {
                               <ClipboardList className="w-4 h-4 mr-1" />
                               Tests
                             </Button>
+                            <Button
+                              data-testid={`manage-feedback-${program.id}`}
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                setActiveTab("feedback");
+                                setSelectedProgram(program);
+                              }}
+                            >
+                              <MessageSquare className="w-4 h-4 mr-1" />
+                              Feedback
+                            </Button>
                           </div>
                         </div>
                       </div>
