@@ -1109,35 +1109,77 @@ const AdminDashboard = ({ user, onLogout }) => {
             <Card>
               <CardHeader>
                 <CardTitle>All Users</CardTitle>
-                <CardDescription>View all system users</CardDescription>
+                <CardDescription>View all system users grouped by company</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-2">
-                  {users.length === 0 ? (
-                    <p className="text-gray-500 text-center py-8">No users yet</p>
-                  ) : (
-                    users.map((u) => (
-                      <div
-                        key={u.id}
-                        data-testid={`user-item-${u.id}`}
-                        className="p-4 bg-gray-50 rounded-lg flex justify-between items-center hover:bg-gray-100 transition-colors"
-                      >
-                        <div>
-                          <h3 className="font-semibold text-gray-900">{u.full_name}</h3>
-                          <p className="text-sm text-gray-600">{u.email}</p>
-                          <div className="flex gap-2 mt-1">
-                            <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded capitalize">
-                              {u.role.replace('_', ' ')}
-                            </span>
-                            <span className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded">
-                              ID: {u.id_number}
-                            </span>
-                          </div>
+                {users.length === 0 ? (
+                  <p className="text-gray-500 text-center py-8">No users yet</p>
+                ) : (
+                  <div className="space-y-6">
+                    {/* Admin, Trainers, Coordinators (No Company) */}
+                    {users.filter(u => !u.company_id).length > 0 && (
+                      <div>
+                        <h3 className="text-lg font-semibold mb-3 text-gray-700">System Users (No Company)</h3>
+                        <div className="space-y-2">
+                          {users.filter(u => !u.company_id).map((u) => (
+                            <div
+                              key={u.id}
+                              data-testid={`user-item-${u.id}`}
+                              className="p-4 bg-gray-50 rounded-lg flex justify-between items-center hover:bg-gray-100 transition-colors"
+                            >
+                              <div>
+                                <h3 className="font-semibold text-gray-900">{u.full_name}</h3>
+                                <p className="text-sm text-gray-600">{u.email}</p>
+                                <div className="flex gap-2 mt-1">
+                                  <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded capitalize">
+                                    {u.role.replace('_', ' ')}
+                                  </span>
+                                  <span className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded">
+                                    ID: {u.id_number}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       </div>
-                    ))
-                  )}
-                </div>
+                    )}
+
+                    {/* Users Grouped by Company */}
+                    {companies.map((company) => {
+                      const companyUsers = users.filter(u => u.company_id === company.id);
+                      if (companyUsers.length === 0) return null;
+                      
+                      return (
+                        <div key={company.id}>
+                          <h3 className="text-lg font-semibold mb-3 text-gray-700">{company.name} ({companyUsers.length} users)</h3>
+                          <div className="space-y-2">
+                            {companyUsers.map((u) => (
+                              <div
+                                key={u.id}
+                                data-testid={`user-item-${u.id}`}
+                                className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg flex justify-between items-center hover:shadow-md transition-shadow"
+                              >
+                                <div>
+                                  <h3 className="font-semibold text-gray-900">{u.full_name}</h3>
+                                  <p className="text-sm text-gray-600">{u.email}</p>
+                                  <div className="flex gap-2 mt-1">
+                                    <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded capitalize">
+                                      {u.role.replace('_', ' ')}
+                                    </span>
+                                    <span className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded">
+                                      ID: {u.id_number}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
