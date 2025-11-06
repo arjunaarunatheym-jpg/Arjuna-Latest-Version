@@ -1429,7 +1429,18 @@ async def create_feedback_template(template_data: FeedbackTemplateCreate, curren
 async def get_feedback_template(program_id: str, current_user: User = Depends(get_current_user)):
     template = await db.feedback_templates.find_one({"program_id": program_id}, {"_id": 0})
     if not template:
-        raise HTTPException(status_code=404, detail="Feedback template not found for this program")
+        # Return default template instead of error
+        return {
+            "program_id": program_id,
+            "questions": [
+                {"question": "Overall Training Experience", "type": "rating", "required": True},
+                {"question": "Training Content Quality", "type": "rating", "required": True},
+                {"question": "Trainer Effectiveness", "type": "rating", "required": True},
+                {"question": "Venue & Facilities", "type": "rating", "required": True},
+                {"question": "Suggestions for Improvement", "type": "text", "required": False},
+                {"question": "Additional Comments", "type": "text", "required": False}
+            ]
+        }
     
     if isinstance(template.get('created_at'), str):
         template['created_at'] = datetime.fromisoformat(template['created_at'])
