@@ -169,7 +169,7 @@ const ParticipantDashboard = ({ user, onLogout }) => {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `certificate_${cert.session_id}.docx`;
+      link.download = `certificate_${cert.session_id}.pdf`;
       link.style.display = 'none';
       document.body.appendChild(link);
       
@@ -182,7 +182,7 @@ const ParticipantDashboard = ({ user, onLogout }) => {
         window.URL.revokeObjectURL(url);
       }, 100);
       
-      toast.success("Certificate downloaded! Check your Downloads folder.");
+      toast.success("Certificate PDF downloaded! Check your Downloads folder.");
     } catch (error) {
       console.error('Download error:', error);
       toast.error("Failed to download certificate. Please try again.");
