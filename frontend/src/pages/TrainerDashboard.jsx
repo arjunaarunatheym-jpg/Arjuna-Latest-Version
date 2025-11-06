@@ -251,25 +251,43 @@ const TrainerDashboard = ({ user, onLogout }) => {
                               <p className="text-gray-500 text-center py-4">No participants assigned</p>
                             ) : (
                               <div className="space-y-2">
-                                {participants.map((participant) => (
-                                  <div
-                                    key={participant.id}
-                                    className="p-3 bg-gradient-to-r from-orange-50 to-amber-50 rounded-lg border border-orange-200 flex justify-between items-center"
-                                  >
-                                    <div>
-                                      <p className="font-semibold text-gray-900">{participant.full_name}</p>
-                                      <p className="text-sm text-gray-600">{participant.email}</p>
-                                    </div>
-                                    <Button
-                                      onClick={() => navigate(`/trainer-checklist/${session.id}/${participant.id}`)}
-                                      size="sm"
-                                      className="bg-orange-600 hover:bg-orange-700"
+                                {participants.map((participant) => {
+                                  const isCompleted = participant.checklist && participant.checklist.verification_status === 'completed';
+                                  
+                                  return (
+                                    <div
+                                      key={participant.id}
+                                      className={`p-3 rounded-lg border flex justify-between items-center ${
+                                        isCompleted 
+                                          ? 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-200' 
+                                          : 'bg-gradient-to-r from-orange-50 to-amber-50 border-orange-200'
+                                      }`}
                                     >
-                                      <ClipboardCheck className="w-4 h-4 mr-2" />
-                                      Complete Checklist
-                                    </Button>
-                                  </div>
-                                ))}
+                                      <div>
+                                        <div className="flex items-center gap-2">
+                                          <p className="font-semibold text-gray-900">{participant.full_name}</p>
+                                          {isCompleted && (
+                                            <span className="px-2 py-0.5 bg-green-600 text-white text-xs rounded-full">
+                                              ✓ Completed
+                                            </span>
+                                          )}
+                                        </div>
+                                        <p className="text-sm text-gray-600">{participant.email}</p>
+                                      </div>
+                                      <Button
+                                        onClick={() => navigate(`/trainer-checklist/${session.id}/${participant.id}`)}
+                                        size="sm"
+                                        className={isCompleted 
+                                          ? 'bg-green-600 hover:bg-green-700' 
+                                          : 'bg-orange-600 hover:bg-orange-700'
+                                        }
+                                      >
+                                        <ClipboardCheck className="w-4 h-4 mr-2" />
+                                        {isCompleted ? 'View Checklist' : 'Complete Checklist'}
+                                      </Button>
+                                    </div>
+                                  );
+                                })}
                               </div>
                             )}
                           </CardContent>
