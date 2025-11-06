@@ -103,8 +103,15 @@ const ParticipantDashboard = ({ user, onLogout }) => {
       const response = await axiosInstance.post(`/certificates/generate/${sessionId}/${user.id}`);
       const certificateUrl = response.data.certificate_url;
       
-      // Use direct link - simple and reliable
-      window.location.href = `${process.env.REACT_APP_BACKEND_URL}${certificateUrl}`;
+      // Create a temporary link and click it
+      const link = document.createElement('a');
+      link.href = `${process.env.REACT_APP_BACKEND_URL}${certificateUrl}`;
+      link.download = `certificate_${sessionId}.pdf`;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
       
       toast.success("Certificate downloading...");
     } catch (error) {
