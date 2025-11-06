@@ -331,8 +331,8 @@ class TestRunner:
         headers = {'Authorization': f'Bearer {self.admin_token}'}
         
         participant_data = {
-            "email": "testparticipant@example.com",
-            "password": "participant123",
+            "email": "maaman@gmail.com",
+            "password": "mddrc1",
             "full_name": "Test Participant",
             "id_number": "PART001",
             "role": "participant",
