@@ -647,6 +647,52 @@ async def delete_test(test_id: str, current_user: User = Depends(get_current_use
     
     return {"message": "Test deleted successfully"}
 
+@api_router.get("/sessions/{session_id}/tests/available")
+async def get_available_tests(session_id: str, current_user: User = Depends(get_current_user)):
+    if current_user.role != "participant":
+        raise HTTPException(status_code=403, detail="Only participants can access this")
+    
+    # Get session
+    session = await db.sessions.find_one({"id": session_id}, {"_id": 0})
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    # Get participant access
+    access = await get_or_create_participant_access(current_user.id, session_id)
+    
+    # Get tests for the session's program
+    tests = await db.tests.find({"program_id": session['program_id']}, {"_id": 0}).to_list(10)
+    
+    available_tests = []
+    for test in tests:
+        if isinstance(test.get('created_at'), str):
+            test['created_at'] = datetime.fromisoformat(test['created_at'])
+        
+        test_type = test['test_type']
+        can_access = False
+        is_completed = False
+        
+        if test_type == "pre":
+            can_access = access.get('can_access_pre_test', False)
+            is_completed = access.get('pre_test_completed', False)
+        elif test_type == "post":
+            can_access = access.get('can_access_post_test', False)
+            is_completed = access.get('post_test_completed', False)
+        
+        if can_access and not is_completed:
+            # Don't send correct answers to participant
+            test_copy = test.copy()
+            test_copy['questions'] = [
+                {
+                    'question': q['question'],
+                    'options': q['options']
+                }
+                for q in test['questions']
+            ]
+            available_tests.append(test_copy)
+    
+    return available_tests
+
 @api_router.get("/tests/{test_id}")
 async def get_test(test_id: str, current_user: User = Depends(get_current_user)):
     test_doc = await db.tests.find_one({"id": test_id}, {"_id": 0})
@@ -660,6 +706,16 @@ async def get_test(test_id: str, current_user: User = Depends(get_current_user))
         questions = test_doc['questions']
         random.shuffle(questions)
         test_doc['questions'] = questions
+    
+    # Don't send correct answers to participants before submission
+    if current_user.role == "participant":
+        test_doc['questions'] = [
+            {
+                'question': q['question'],
+                'options': q['options']
+            }
+            for q in test_doc['questions']
+        ]
     
     return test_doc
 
