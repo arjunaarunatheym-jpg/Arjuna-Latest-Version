@@ -894,15 +894,16 @@ class TestRunner:
                     self.log(f"⚠️  Error cleaning up program: {str(e)}", "WARNING")
     
     def run_all_tests(self):
-        """Run all test management endpoint tests"""
+        """Run all test management endpoint tests including Phase 1 participant test-taking"""
         self.log("=" * 80)
-        self.log("STARTING TEST MANAGEMENT ENDPOINTS TEST SUITE")
+        self.log("STARTING COMPREHENSIVE TEST SUITE - PHASE 1 PARTICIPANT TEST-TAKING")
         self.log("=" * 80)
         
         test_results = []
         
         # Test sequence as specified in the review request
         tests = [
+            # Basic test management (existing tests)
             ("Admin Login", self.login_admin),
             ("Create Test Program", self.create_test_program),
             ("Create Pre-Test", self.test_create_pre_test),
@@ -915,6 +916,20 @@ class TestRunner:
             ("Participant Login", self.login_participant),
             ("Delete Test as Participant (403)", self.test_delete_test_as_participant),
             ("Create Test without Auth (403)", self.test_create_test_without_auth),
+            
+            # Phase 1 participant test-taking endpoints
+            ("Create Company and Session", self.create_company_and_session),
+            ("Set Participant Access", self.set_participant_access),
+            ("Get Available Tests as Participant", self.test_get_available_tests_as_participant),
+            ("Get Available Tests as Non-Participant (403)", self.test_get_available_tests_as_non_participant),
+            ("Get Test as Participant (No Correct Answers)", self.test_get_test_as_participant),
+            ("Submit Test as Participant", self.test_submit_test),
+            ("Get Test Result Detail as Participant", self.test_get_test_result_detail_as_participant),
+            ("Get Non-existent Test Result (404)", self.test_get_test_result_detail_nonexistent),
+            ("Create Second Participant", self.create_second_participant),
+            ("Login Second Participant", self.login_second_participant),
+            ("Get Other Participant Result (403)", self.test_get_other_participant_result),
+            ("Completed Test Not in Available", self.test_completed_test_not_in_available),
         ]
         
         for test_name, test_func in tests:
