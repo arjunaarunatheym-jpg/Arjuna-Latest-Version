@@ -44,6 +44,8 @@ CERTIFICATE_DIR = STATIC_DIR / "certificates"
 CERTIFICATE_DIR.mkdir(exist_ok=True)
 TEMPLATE_DIR = STATIC_DIR / "templates"
 TEMPLATE_DIR.mkdir(exist_ok=True)
+CHECKLIST_PHOTOS_DIR = STATIC_DIR / "checklist_photos"
+CHECKLIST_PHOTOS_DIR.mkdir(exist_ok=True)
 
 # ============ MODELS ============
 
