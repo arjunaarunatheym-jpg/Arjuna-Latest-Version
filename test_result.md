@@ -277,6 +277,18 @@ frontend:
         agent: "testing"
         comment: "✅ Participant Dashboard fully tested and working! Certificate download functionality verified with user maaman@gmail.com. Download Certificate button exists in Overview tab, certificate properly listed in Certificates tab with functional Download button. Backend certificate generation and file download both working (200 OK responses). Success toast message appears, new tab opens for download. All UI integrations working correctly including test navigation and results display."
 
+  - task: "Certificate preview UI integration"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/ParticipantDashboard.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added Preview button alongside Download button in both Overview tab (for sessions with feedback submitted) and Certificates tab. Preview button is blue with Eye icon. Uses authenticated blob download via axiosInstance to handle authorization. Opens certificate in new tab. Both Preview and Download buttons work independently. Download button changed to show Download icon instead of Award icon for consistency. Ready for frontend testing."
+
   - task: "Admin Dashboard - Session Delete Functionality"
     implemented: true
     working: "NA"
