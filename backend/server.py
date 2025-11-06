@@ -15,6 +15,7 @@ from passlib.context import CryptContext
 import jwt
 import random
 import shutil
+import subprocess
 from docx import Document
 
 ROOT_DIR = Path(__file__).parent
