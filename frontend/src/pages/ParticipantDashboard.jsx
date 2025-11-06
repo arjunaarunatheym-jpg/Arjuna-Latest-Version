@@ -165,6 +165,56 @@ const ParticipantDashboard = ({ user, onLogout }) => {
     }
   };
 
+  const handlePreviewCertificate = async (sessionId) => {
+    try {
+      // First generate/get the certificate
+      const response = await axiosInstance.post(`/certificates/generate/${sessionId}/${user.id}`);
+      const certificateId = response.data.certificate_id;
+      
+      // Get preview (PDF) via authenticated request
+      const previewResponse = await axiosInstance.get(`/certificates/preview/${certificateId}`, {
+        responseType: 'blob'
+      });
+      
+      // Create blob URL and open in new tab
+      const blob = new Blob([previewResponse.data], {
+        type: 'application/pdf'
+      });
+      const url = window.URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      
+      // Clean up after a delay
+      setTimeout(() => window.URL.revokeObjectURL(url), 100);
+      
+      toast.success("Opening certificate preview...");
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to preview certificate");
+    }
+  };
+
+  const handlePreviewExistingCertificate = async (cert) => {
+    try {
+      // Get preview (PDF) via authenticated request
+      const previewResponse = await axiosInstance.get(`/certificates/preview/${cert.id}`, {
+        responseType: 'blob'
+      });
+      
+      // Create blob URL and open in new tab
+      const blob = new Blob([previewResponse.data], {
+        type: 'application/pdf'
+      });
+      const url = window.URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      
+      // Clean up after a delay
+      setTimeout(() => window.URL.revokeObjectURL(url), 100);
+      
+      toast.success("Opening certificate preview...");
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to preview certificate");
+    }
+  };
+
   const handleVehicleSubmit = async (sessionId) => {
     if (!vehicleForm.vehicle_model || !vehicleForm.registration_number || !vehicleForm.roadtax_expiry) {
       toast.error("Please fill in all vehicle details");
