@@ -264,8 +264,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "GET endpoint for available tests by session"
-    - "GET endpoint for test result details"
+    - "DELETE endpoint for sessions"
+    - "Admin Dashboard - Session Delete Functionality"
     - "Participant Test-Taking Interface"
     - "Test Results Display"
     - "Participant Dashboard - Test Integration"
