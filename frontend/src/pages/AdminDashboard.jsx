@@ -1785,143 +1785,115 @@ const AdminDashboard = ({ user, onLogout }) => {
           {/* Feedback Tab */}
           {/* Checklist Templates Tab */}
           <TabsContent value="checklists">
-            <Card>
-              <CardHeader>
-                <div className="flex justify-between items-center">
-                  <div>
-                    <CardTitle>Vehicle Inspection Checklists</CardTitle>
-                    <CardDescription>Create checklist templates for each program</CardDescription>
-                  </div>
-                  <Dialog open={checklistDialogOpen} onOpenChange={setChecklistDialogOpen}>
-                    <DialogTrigger asChild>
-                      <Button style={{ backgroundColor: primaryColor }}>
-                        <Plus className="w-4 h-4 mr-2" />
-                        Create Checklist Template
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-                      <DialogHeader>
-                        <DialogTitle>Create Checklist Template</DialogTitle>
-                        <DialogDescription>
-                          Define checklist items for vehicle inspection
-                        </DialogDescription>
-                      </DialogHeader>
-                      <form onSubmit={handleCreateChecklistTemplate} className="space-y-4">
-                        <div>
-                          <Label htmlFor="program-select">Program</Label>
-                          <Select
-                            value={checklistForm.program_id}
-                            onValueChange={(value) => setChecklistForm({ ...checklistForm, program_id: value })}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select program" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {programs.map((program) => (
-                                <SelectItem key={program.id} value={program.id}>
-                                  {program.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        
-                        <div>
-                          <Label>Checklist Items</Label>
-                          <div className="space-y-2 mt-2">
-                            {checklistForm.items.map((item, index) => (
-                              <div key={index} className="flex gap-2">
-                                <Input
-                                  value={item}
-                                  onChange={(e) => handleChecklistItemChange(index, e.target.value)}
-                                  placeholder={`Item ${index + 1} (e.g., Brakes, Lights, Tires)`}
-                                />
-                                {checklistForm.items.length > 1 && (
-                                  <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="icon"
-                                    onClick={() => handleRemoveChecklistItem(index)}
-                                  >
-                                    <Trash2 className="w-4 h-4" />
-                                  </Button>
-                                )}
-                              </div>
-                            ))}
-                          </div>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={handleAddChecklistItem}
-                            className="mt-2"
-                          >
-                            <Plus className="w-4 h-4 mr-2" />
-                            Add Item
-                          </Button>
-                        </div>
-                        
-                        <Button type="submit" className="w-full">
-                          Create Template
-                        </Button>
-                      </form>
-                    </DialogContent>
-                  </Dialog>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {checklistTemplates.length === 0 ? (
+            {!selectedProgram ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Vehicle Inspection Checklists</CardTitle>
+                  <CardDescription>Select a program to manage its checklist items</CardDescription>
+                </CardHeader>
+                <CardContent>
                   <div className="text-center py-12">
                     <ClipboardList className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-                    <p className="text-gray-500">No checklist templates created yet</p>
-                    <p className="text-sm text-gray-400 mt-2">Create templates for different programs</p>
+                    <p className="text-gray-500">Please select a program from the Programs tab to manage its checklist items.</p>
+                    <Button
+                      className="mt-4"
+                      onClick={() => setActiveTab("programs")}
+                      variant="outline"
+                    >
+                      Go to Programs
+                    </Button>
                   </div>
-                ) : (
-                  <div className="space-y-4">
-                    {checklistTemplates.map((template) => {
-                      const program = programs.find(p => p.id === template.program_id);
+                </CardContent>
+              </Card>
+            ) : (
+              <Card>
+                <CardHeader>
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <CardTitle>Checklist Items for {selectedProgram.name}</CardTitle>
+                      <CardDescription>Manage vehicle inspection checklist items</CardDescription>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button variant="outline" onClick={() => {
+                        setActiveTab("programs");
+                        setSelectedProgram(null);
+                      }}>
+                        Back to Programs
+                      </Button>
+                      <Dialog open={checklistDialogOpen} onOpenChange={setChecklistDialogOpen}>
+                        <DialogTrigger asChild>
+                          <Button style={{ backgroundColor: primaryColor }}>
+                            <Plus className="w-4 h-4 mr-2" />
+                            Add Checklist Item
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Add Checklist Item</DialogTitle>
+                            <DialogDescription>
+                              Add a new item to the vehicle inspection checklist
+                            </DialogDescription>
+                          </DialogHeader>
+                          <form onSubmit={handleCreateChecklistTemplate} className="space-y-4">
+                            <div>
+                              <Label htmlFor="checklist-item">Item Name</Label>
+                              <Input
+                                id="checklist-item"
+                                value={checklistForm.items[0] || ""}
+                                onChange={(e) => setChecklistForm({ 
+                                  ...checklistForm, 
+                                  program_id: selectedProgram.id,
+                                  items: [e.target.value] 
+                                })}
+                                placeholder="e.g., Brakes, Lights, Tires"
+                                required
+                              />
+                            </div>
+                            <Button type="submit" className="w-full">
+                              Add Item
+                            </Button>
+                          </form>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {(() => {
+                    const template = checklistTemplates.find(t => t.program_id === selectedProgram.id);
+                    if (!template || template.items.length === 0) {
                       return (
-                        <Card key={template.id} className="border-l-4 border-l-blue-500">
-                          <CardHeader>
-                            <div className="flex justify-between items-start">
-                              <div>
-                                <CardTitle className="text-lg">
-                                  {program ? program.name : 'Unknown Program'}
-                                </CardTitle>
-                                <p className="text-sm text-gray-600 mt-1">
-                                  {template.items.length} checklist items
-                                </p>
-                              </div>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleDeleteChecklistTemplate(template.id)}
-                              >
-                                <Trash2 className="w-4 h-4 mr-2" />
-                                Delete
-                              </Button>
-                            </div>
-                          </CardHeader>
-                          <CardContent>
-                            <div className="space-y-2">
-                              <p className="font-semibold text-sm text-gray-700">Checklist Items:</p>
-                              <div className="grid grid-cols-2 gap-2">
-                                {template.items.map((item, idx) => (
-                                  <div key={idx} className="flex items-center gap-2 p-2 bg-gray-50 rounded">
-                                    <span className="text-gray-700">{idx + 1}.</span>
-                                    <span>{item}</span>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
+                        <div className="text-center py-12">
+                          <ClipboardList className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+                          <p className="text-gray-500">No checklist items yet</p>
+                          <p className="text-sm text-gray-400 mt-2">Add items using the button above</p>
+                        </div>
                       );
-                    })}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                    }
+                    
+                    return (
+                      <div className="space-y-2">
+                        {template.items.map((item, idx) => (
+                          <div key={idx} className="flex justify-between items-center p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg hover:shadow-md transition-shadow">
+                            <div className="flex items-center gap-3">
+                              <span className="font-semibold text-gray-700 bg-white px-3 py-1 rounded">{idx + 1}</span>
+                              <span className="text-gray-900">{item}</span>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDeleteChecklistItem(template.id, idx)}
+                            >
+                              <Trash2 className="w-4 h-4 text-red-600" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })()}
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           <TabsContent value="feedback">
