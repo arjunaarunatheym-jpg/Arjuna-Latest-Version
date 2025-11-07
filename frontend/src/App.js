@@ -5,7 +5,7 @@ import axios from "axios";
 import Login from "./pages/Login";
 import AdminDashboard from "./pages/AdminDashboard";
 import ParticipantDashboard from "./pages/ParticipantDashboard";
-import SupervisorDashboard from "./pages/SupervisorDashboard";
+import SupervisorDashboard from "./pages/SupervisorDashboard_new";
 import TrainerDashboard from "./pages/TrainerDashboard";
 import TrainerChecklist from "./pages/TrainerChecklist";
 import CoordinatorDashboard from "./pages/CoordinatorDashboard";
