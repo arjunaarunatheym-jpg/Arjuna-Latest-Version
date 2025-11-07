@@ -119,12 +119,12 @@ const AdminDashboard = ({ user, onLogout }) => {
       checkUserExists(
         newParticipant.full_name,
         newParticipant.email,
-        newParticipant.phone_number,
+        newParticipant.id_number,
         setParticipantMatchStatus
       );
     }, 500);
     return () => clearTimeout(timer);
-  }, [newParticipant.full_name, newParticipant.email, newParticipant.phone_number]);
+  }, [newParticipant.full_name, newParticipant.email, newParticipant.id_number]);
 
   // Check supervisor existence with debounce
   useEffect(() => {
@@ -132,12 +132,12 @@ const AdminDashboard = ({ user, onLogout }) => {
       checkUserExists(
         newSupervisor.full_name,
         newSupervisor.email,
-        newSupervisor.phone_number,
+        newSupervisor.id_number,
         setSupervisorMatchStatus
       );
     }, 500);
     return () => clearTimeout(timer);
-  }, [newSupervisor.full_name, newSupervisor.email, newSupervisor.phone_number]);
+  }, [newSupervisor.full_name, newSupervisor.email, newSupervisor.id_number]);
 
   const loadData = async () => {
     try {
