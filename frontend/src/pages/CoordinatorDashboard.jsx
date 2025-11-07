@@ -644,14 +644,34 @@ const CoordinatorDashboard = ({ user, onLogout }) => {
                   {/* Participants */}
                   <Card>
                     <CardHeader>
-                      <CardTitle>Participants ({participants.length})</CardTitle>
-                      <CardDescription>All participants enrolled in this session</CardDescription>
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <CardTitle>Participants ({participants.length})</CardTitle>
+                          <CardDescription>All participants enrolled in this session</CardDescription>
+                        </div>
+                        <Button
+                          onClick={() => setAddParticipantDialogOpen(true)}
+                          variant="outline"
+                          size="sm"
+                          style={{ borderColor: primaryColor, color: primaryColor }}
+                        >
+                          <Users className="w-4 h-4 mr-2" />
+                          Add Participant
+                        </Button>
+                      </div>
                     </CardHeader>
                     <CardContent>
                       {participants.length === 0 ? (
                         <div className="text-center py-8">
                           <Users className="w-12 h-12 mx-auto text-gray-400 mb-2" />
                           <p className="text-gray-500">No participants assigned yet</p>
+                          <Button
+                            onClick={() => setAddParticipantDialogOpen(true)}
+                            variant="outline"
+                            className="mt-4"
+                          >
+                            Add First Participant
+                          </Button>
                         </div>
                       ) : (
                         <div className="space-y-2">
