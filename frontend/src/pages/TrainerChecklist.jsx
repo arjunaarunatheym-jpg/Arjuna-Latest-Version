@@ -293,6 +293,7 @@ const TrainerChecklist = ({ user }) => {
                         <input
                           type="file"
                           accept="image/*"
+                          capture="environment"
                           onChange={(e) => handlePhotoUpload(index, e.target.files[0])}
                           className="hidden"
                           id={`photo-${index}`}
@@ -301,7 +302,7 @@ const TrainerChecklist = ({ user }) => {
                           <Button type="button" variant="outline" asChild>
                             <span>
                               <Camera className="w-4 h-4 mr-2" />
-                              Upload Photo
+                              Take Photo
                             </span>
                           </Button>
                         </label>
@@ -309,6 +310,9 @@ const TrainerChecklist = ({ user }) => {
                           <span className="text-sm text-green-600">✓ Photo attached</span>
                         )}
                       </div>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Camera will open on mobile devices
+                      </p>
                     </div>
                   )}
                 </div>
