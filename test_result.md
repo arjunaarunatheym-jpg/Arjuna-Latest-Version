@@ -292,13 +292,13 @@ frontend:
         agent: "main"
         comment: "Added Preview button alongside Download button in both Overview tab (for sessions with feedback submitted) and Certificates tab. Preview button is blue with Eye icon. Uses authenticated blob download via axiosInstance to handle authorization. Opens certificate in new tab. Both Preview and Download buttons work independently. Download button changed to show Download icon instead of Award icon for consistency. Ready for frontend testing."
 
-  - task: "Automatic user detection and reusability for session creation"
+  - task: "Automatic user detection and reusability for session creation - Updated"
     implemented: true
-    working: true
+    working: "NA"
     file: "/app/backend/server.py, /app/frontend/src/pages/AdminDashboard.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main"
@@ -306,6 +306,21 @@ frontend:
       - working: true
         agent: "testing"
         comment: "✅ AUTOMATIC USER DETECTION AND REUSABILITY FULLY TESTED AND WORKING! Comprehensive testing completed with 17/17 tests passed. ✅ Test 1: Check User Exists Endpoint - All authentication tests passed (403 for non-admin, 403 for participant, exists:false for non-existent users, exists:true with correct user data for name+email and name+phone combinations). ✅ Test 2: Session Creation with New Participants - Successfully created 2 new participants, verified in database, correct is_existing:false flags, proper participant_ids assignment. ✅ Test 3: Session Creation with Existing Participants - System correctly found existing user by name+email, returned is_existing:true, reused same user_id across sessions, updated user data (ID number changed from NP001 to NP001_UPDATED), no duplicate users created. ✅ Test 4: Session Creation with New Supervisors - Successfully created supervisor with role 'pic_supervisor', correct is_existing:false flag, proper supervisor_ids assignment. ✅ Test 5: Session Creation with Existing Supervisors - System correctly found existing supervisor, returned is_existing:true, reused same supervisor_id across sessions. ✅ Test 6: Mix of New and Existing Users - Created session with 1 new participant, 1 existing participant, and 1 existing supervisor. All is_existing flags correct (false for new, true for existing), all users properly linked to session, participant_access records created for all participants. All backend endpoints working perfectly: POST /api/users/check-exists (admin-only, finds by name+email OR name+phone), POST /api/sessions (find_or_create_user logic working, returns participant_results and supervisor_results with is_existing flags). Feature is production-ready."
+      - working: "NA"
+        agent: "main"
+        comment: "USER FEEDBACK UPDATE: Simplified matching logic from name+(email OR phone) to fullname OR email OR id_number (any single match is sufficient). Removed messy 'Select Existing Participants' checkbox section - now purely auto-detection based. Added edit/delete functionality for current participants in Edit Session dialog. Updated backend find_or_create_user and check_user_exists endpoints to use simpler OR matching. Frontend updated to check by fullname, email, or id_number. Ready for retesting."
+
+  - task: "Forgot password functionality for all roles"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py, /app/frontend/src/pages/Login.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added forgot password and reset password functionality. Backend: Added POST /auth/forgot-password endpoint (sends success message, in production would send email), POST /auth/reset-password endpoint (directly resets password with email verification). Frontend: Added 'Forgot Password?' link on login page, modal for entering email, modal for entering new password and confirmation. Password validation (min 6 chars, must match). Visual feedback with success/error toasts. Ready for testing."
 
   - task: "Admin Dashboard - Session Delete Functionality"
     implemented: true
