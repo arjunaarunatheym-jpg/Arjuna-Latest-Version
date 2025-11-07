@@ -1504,7 +1504,17 @@ async def get_test_result_detail(result_id: str, current_user: User = Depends(ge
     # Get the test questions with correct answers
     test = await db.tests.find_one({"id": result['test_id']}, {"_id": 0})
     if test:
-        result['test_questions'] = test['questions']
+        questions = test['questions']
+        
+        # If question_indices exists (shuffled test), reorder questions to match participant's view
+        if result.get('question_indices'):
+            reordered_questions = []
+            for idx in result['question_indices']:
+                if idx < len(questions):
+                    reordered_questions.append(questions[idx])
+            result['test_questions'] = reordered_questions
+        else:
+            result['test_questions'] = questions
     
     return result
 
