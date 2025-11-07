@@ -1795,6 +1795,18 @@ const AdminDashboard = ({ user, onLogout }) => {
                               <div className="flex gap-2">
                                 <Button
                                   size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    setResetPasswordUser(u);
+                                    setResetPasswordDialogOpen(true);
+                                  }}
+                                  data-testid={`reset-password-${u.id}`}
+                                >
+                                  <UserCog className="w-4 h-4 mr-1" />
+                                  Reset Password
+                                </Button>
+                                <Button
+                                  size="sm"
                                   variant={u.is_active ? "outline" : "default"}
                                   onClick={() => handleToggleUserStatus(u.id, u.is_active)}
                                   data-testid={`toggle-status-${u.id}`}
