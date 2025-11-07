@@ -825,17 +825,25 @@ const CoordinatorDashboard = ({ user, onLogout }) => {
                               <h4 className="font-semibold text-red-900 mb-2">{issue.participant_name}</h4>
                               <div className="space-y-2">
                                 {issue.items.map((item, itemIdx) => (
-                                  <div key={itemIdx} className="p-2 bg-white rounded border border-red-200">
-                                    <p className="font-medium text-sm text-red-800">{item.item_name || item.name || 'Item'}</p>
+                                  <div key={itemIdx} className="p-3 bg-white rounded border border-red-200">
+                                    <p className="font-semibold text-sm text-red-900 mb-2">
+                                      🔧 {item.item || item.item_name || item.name || 'Item'}
+                                    </p>
                                     {item.comments && (
-                                      <p className="text-xs text-gray-700 mt-1">{item.comments}</p>
+                                      <p className="text-sm text-gray-700 bg-gray-50 p-2 rounded mb-2">
+                                        <span className="font-medium">Issue: </span>{item.comments}
+                                      </p>
                                     )}
-                                    {item.photo && (
-                                      <img 
-                                        src={item.photo} 
-                                        alt={item.item_name} 
-                                        className="mt-2 w-24 h-24 object-cover rounded border"
-                                      />
+                                    {(item.photo_url || item.photo) && (
+                                      <div className="mt-2">
+                                        <p className="text-xs text-gray-600 mb-1">Photo:</p>
+                                        <img 
+                                          src={item.photo_url || item.photo} 
+                                          alt={item.item || 'Vehicle item'} 
+                                          className="w-32 h-32 object-cover rounded border-2 border-red-300 cursor-pointer hover:scale-105 transition-transform"
+                                          onClick={() => window.open(item.photo_url || item.photo, '_blank')}
+                                        />
+                                      </div>
                                     )}
                                   </div>
                                 ))}
