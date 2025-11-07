@@ -715,43 +715,57 @@ const ParticipantDashboard = ({ user, onLogout }) => {
                         </div>
 
                         {/* Checklist Items */}
-                        {checklist.checklist_items && checklist.checklist_items.length > 0 && (
+                        {checklist.checklist_items && checklist.checklist_items.length > 0 ? (
                           <div className="space-y-3">
                             <h4 className="font-semibold text-sm text-gray-700 mb-2">Inspection Results:</h4>
-                            {checklist.checklist_items.map((item, idx) => (
-                              <div key={idx} className="p-3 bg-white rounded-lg border">
-                                <div className="flex justify-between items-start">
-                                  <div className="flex-1">
-                                    <p className="font-medium text-gray-900">{item.item_name}</p>
-                                    {item.comments && (
-                                      <p className="text-sm text-gray-600 mt-1">
-                                        <span className="font-semibold">Comments:</span> {item.comments}
-                                      </p>
-                                    )}
+                            {checklist.checklist_items.map((item, idx) => {
+                              const itemName = item.item_name || item.name || item.item || 'Item';
+                              const itemStatus = item.status || 'unknown';
+                              const itemComments = item.comments || item.comment || '';
+                              const itemPhoto = item.photo || item.photo_url || item.image || '';
+                              
+                              return (
+                                <div key={idx} className="p-4 bg-white rounded-lg border shadow-sm">
+                                  <div className="flex justify-between items-start gap-3">
+                                    <div className="flex-1">
+                                      <p className="font-semibold text-gray-900 text-base">{itemName}</p>
+                                      {itemComments && (
+                                        <p className="text-sm text-gray-600 mt-2">
+                                          <span className="font-semibold">Comments:</span> {itemComments}
+                                        </p>
+                                      )}
+                                    </div>
+                                    <span
+                                      className={`px-4 py-1.5 rounded-full text-xs font-bold ml-3 whitespace-nowrap ${
+                                        itemStatus === "good"
+                                          ? "bg-green-100 text-green-800 border border-green-300"
+                                          : itemStatus === "satisfactory"
+                                          ? "bg-yellow-100 text-yellow-800 border border-yellow-300"
+                                          : itemStatus === "needs_repair"
+                                          ? "bg-red-100 text-red-800 border border-red-300"
+                                          : "bg-gray-100 text-gray-800 border border-gray-300"
+                                      }`}
+                                    >
+                                      {itemStatus === "needs_repair" ? "NEEDS REPAIR" : itemStatus.toUpperCase()}
+                                    </span>
                                   </div>
-                                  <span
-                                    className={`px-3 py-1 rounded-full text-xs font-medium ml-3 ${
-                                      item.status === "good"
-                                        ? "bg-green-100 text-green-800"
-                                        : item.status === "satisfactory"
-                                        ? "bg-yellow-100 text-yellow-800"
-                                        : "bg-red-100 text-red-800"
-                                    }`}
-                                  >
-                                    {item.status?.toUpperCase()}
-                                  </span>
+                                  {itemPhoto && (
+                                    <div className="mt-3">
+                                      <p className="text-xs text-gray-500 mb-1">Photo:</p>
+                                      <img
+                                        src={itemPhoto}
+                                        alt={itemName}
+                                        className="w-48 h-48 object-cover rounded-lg border-2 border-gray-200 shadow-sm"
+                                      />
+                                    </div>
+                                  )}
                                 </div>
-                                {item.photo && (
-                                  <div className="mt-2">
-                                    <img
-                                      src={item.photo}
-                                      alt={item.item_name}
-                                      className="w-32 h-32 object-cover rounded border"
-                                    />
-                                  </div>
-                                )}
-                              </div>
-                            ))}
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <div className="text-center py-4 text-gray-500">
+                            <p>No checklist items available</p>
                           </div>
                         )}
 
