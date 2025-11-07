@@ -294,8 +294,9 @@ const AdminDashboard = ({ user, onLogout }) => {
   const handleCreateSession = async (e) => {
     e.preventDefault();
     
-    if (sessionForm.participant_ids.length === 0) {
-      toast.error("Please select at least one participant");
+    const totalParticipants = sessionForm.participant_ids.length + sessionForm.participants.length;
+    if (totalParticipants === 0) {
+      toast.error("Please add at least one participant");
       return;
     }
 
@@ -306,7 +307,7 @@ const AdminDashboard = ({ user, onLogout }) => {
         return;
       }
 
-      const sessionResponse = await axiosInstance.post("/sessions", {
+      const response = await axiosInstance.post("/sessions", {
         name: program.name,
         program_id: sessionForm.program_id,
         company_id: sessionForm.company_id,
@@ -314,12 +315,37 @@ const AdminDashboard = ({ user, onLogout }) => {
         start_date: sessionForm.start_date,
         end_date: sessionForm.end_date,
         participant_ids: sessionForm.participant_ids,
+        participants: sessionForm.participants,
+        supervisor_ids: sessionForm.supervisor_ids,
+        supervisors: sessionForm.supervisors,
         trainer_assignments: sessionForm.trainer_assignments,
         coordinator_id: sessionForm.coordinator_id || null,
-        supervisor_ids: sessionForm.supervisor_id ? [sessionForm.supervisor_id] : [],
       });
 
-      toast.success(`Session created with ${sessionForm.participant_ids.length} participants`);
+      // Show results of participant/supervisor matching
+      let successMessage = `Session created successfully!`;
+      if (response.data.participant_results && response.data.participant_results.length > 0) {
+        const existingCount = response.data.participant_results.filter(p => p.is_existing).length;
+        const newCount = response.data.participant_results.filter(p => !p.is_existing).length;
+        if (existingCount > 0) {
+          successMessage += ` Linked ${existingCount} existing participant(s).`;
+        }
+        if (newCount > 0) {
+          successMessage += ` Created ${newCount} new participant(s).`;
+        }
+      }
+      if (response.data.supervisor_results && response.data.supervisor_results.length > 0) {
+        const existingCount = response.data.supervisor_results.filter(s => s.is_existing).length;
+        const newCount = response.data.supervisor_results.filter(s => !s.is_existing).length;
+        if (existingCount > 0) {
+          successMessage += ` Linked ${existingCount} existing supervisor(s).`;
+        }
+        if (newCount > 0) {
+          successMessage += ` Created ${newCount} new supervisor(s).`;
+        }
+      }
+
+      toast.success(successMessage);
       setSessionForm({
         program_id: "",
         company_id: "",
@@ -327,13 +353,16 @@ const AdminDashboard = ({ user, onLogout }) => {
         start_date: "",
         end_date: "",
         participant_ids: [],
+        participants: [],
+        supervisor_ids: [],
+        supervisors: [],
         trainer_assignments: [],
         coordinator_id: "",
-        supervisor_id: "",
       });
       setSessionDialogOpen(false);
       loadData();
     } catch (error) {
+      console.error("Session creation error:", error);
       toast.error(error.response?.data?.detail || "Failed to create session");
     }
   };
