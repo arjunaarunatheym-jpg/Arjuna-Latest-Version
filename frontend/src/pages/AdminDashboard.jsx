@@ -113,6 +113,32 @@ const AdminDashboard = ({ user, onLogout }) => {
     loadChecklistTemplates();
   }, []);
 
+  // Check participant existence with debounce
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      checkUserExists(
+        newParticipant.full_name,
+        newParticipant.email,
+        newParticipant.phone_number,
+        setParticipantMatchStatus
+      );
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [newParticipant.full_name, newParticipant.email, newParticipant.phone_number]);
+
+  // Check supervisor existence with debounce
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      checkUserExists(
+        newSupervisor.full_name,
+        newSupervisor.email,
+        newSupervisor.phone_number,
+        setSupervisorMatchStatus
+      );
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [newSupervisor.full_name, newSupervisor.email, newSupervisor.phone_number]);
+
   const loadData = async () => {
     try {
       const [companiesRes, programsRes, sessionsRes, usersRes] = await Promise.all([
