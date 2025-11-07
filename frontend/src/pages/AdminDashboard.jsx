@@ -339,9 +339,9 @@ const AdminDashboard = ({ user, onLogout }) => {
         location: sessionForm.location,
         start_date: sessionForm.start_date,
         end_date: sessionForm.end_date,
-        participant_ids: sessionForm.participant_ids,
+        participant_ids: [],  // No pre-selected participants
         participants: sessionForm.participants,
-        supervisor_ids: sessionForm.supervisor_ids,
+        supervisor_ids: [],  // No pre-selected supervisors
         supervisors: sessionForm.supervisors,
         trainer_assignments: sessionForm.trainer_assignments,
         coordinator_id: sessionForm.coordinator_id || null,
