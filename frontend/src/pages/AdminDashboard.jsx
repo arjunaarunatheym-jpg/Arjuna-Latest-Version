@@ -1763,6 +1763,119 @@ const AdminDashboard = ({ user, onLogout }) => {
             )}
           </TabsContent>
 
+          {/* Supervisors Tab */}
+          <TabsContent value="supervisors">
+            <Card>
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <CardTitle>PIC/Supervisors</CardTitle>
+                    <CardDescription>Manage company supervisors who can view training reports</CardDescription>
+                  </div>
+                  <Dialog open={supervisorDialogOpen} onOpenChange={setSupervisorDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button style={{ backgroundColor: primaryColor }}>
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add Supervisor
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Create PIC/Supervisor</DialogTitle>
+                        <DialogDescription>
+                          Supervisor can view staff attendance and training reports
+                        </DialogDescription>
+                      </DialogHeader>
+                      <form onSubmit={handleCreateSupervisor} className="space-y-4">
+                        <div>
+                          <Label htmlFor="supervisor-name">Full Name</Label>
+                          <Input
+                            id="supervisor-name"
+                            value={supervisorForm.full_name}
+                            onChange={(e) => setSupervisorForm({...supervisorForm, full_name: e.target.value})}
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="supervisor-email">Email</Label>
+                          <Input
+                            id="supervisor-email"
+                            type="email"
+                            value={supervisorForm.email}
+                            onChange={(e) => setSupervisorForm({...supervisorForm, email: e.target.value})}
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="supervisor-password">Password</Label>
+                          <Input
+                            id="supervisor-password"
+                            type="password"
+                            value={supervisorForm.password}
+                            onChange={(e) => setSupervisorForm({...supervisorForm, password: e.target.value})}
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="supervisor-company">Company</Label>
+                          <Select
+                            value={supervisorForm.company_id}
+                            onValueChange={(value) => setSupervisorForm({...supervisorForm, company_id: value})}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select company" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {companies.map((company) => (
+                                <SelectItem key={company.id} value={company.id}>
+                                  {company.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <Button type="submit" className="w-full">Create Supervisor</Button>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {supervisors.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Users className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+                    <p className="text-gray-500">No supervisors created yet</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {supervisors.map((supervisor) => {
+                      const company = companies.find(c => c.id === supervisor.company_id);
+                      return (
+                        <Card key={supervisor.id} className="border-l-4 border-l-purple-500">
+                          <CardContent className="flex justify-between items-center pt-4">
+                            <div>
+                              <p className="font-semibold">{supervisor.full_name}</p>
+                              <p className="text-sm text-gray-600">{supervisor.email}</p>
+                              <p className="text-sm text-gray-500">Company: {company?.name || 'Unknown'}</p>
+                            </div>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleDeleteSupervisor(supervisor.id)}
+                            >
+                              <Trash2 className="w-4 h-4 mr-2" />
+                              Delete
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           {/* Settings Tab */}
           <TabsContent value="settings">
             <Settings />
