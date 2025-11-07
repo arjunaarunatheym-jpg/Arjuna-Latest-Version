@@ -2457,6 +2457,7 @@ async def generate_certificate(session_id: str, participant_id: str, current_use
         '«IC_NUMBER»': participant['id_number'],
         '«COMPANY_NAME»': company_name,
         '«PROGRAMME NAME»': program_name,
+        '<<PROGRAMME NAME>>': program_name,
         '«VENUE»': session['location'],
         '«DATE»': session['end_date']
     }
