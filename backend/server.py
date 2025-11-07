@@ -424,31 +424,33 @@ async def get_or_create_participant_access(participant_id: str, session_id: str)
 
 async def find_or_create_user(user_data: dict, role: str, company_id: str) -> dict:
     """
-    Find existing user by combination of name + email OR name + phone
+    Find existing user by fullname OR email OR id_number (any match)
     If found: update the user with new data
     If not found: create new user
     Returns: user dict with 'is_existing' flag and user data
     """
     full_name = user_data.get("full_name")
     email = user_data.get("email")
+    id_number = user_data.get("id_number")
     phone_number = user_data.get("phone_number")
     
-    # Search for existing user by name + email OR name + phone
-    query = {
-        "full_name": full_name,
-        "$or": []
-    }
+    # Search for existing user by fullname OR email OR id_number
+    query = {"$or": []}
     
+    if full_name:
+        query["$or"].append({"full_name": full_name})
     if email:
         query["$or"].append({"email": email})
-    if phone_number:
-        query["$or"].append({"phone_number": phone_number})
+    if id_number:
+        query["$or"].append({"id_number": id_number})
     
-    # If no email or phone, just search by name
+    # If no fields provided, skip search
     if not query["$or"]:
-        query = {"full_name": full_name}
+        query = None
     
-    existing_user = await db.users.find_one(query, {"_id": 0})
+    existing_user = None
+    if query:
+        existing_user = await db.users.find_one(query, {"_id": 0})
     
     if existing_user:
         # User found - update with new data
