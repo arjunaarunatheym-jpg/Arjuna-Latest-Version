@@ -1075,7 +1075,8 @@ async def toggle_session_access(session_id: str, access_data: dict, current_user
             {"$set": {field_name: enabled}}
         )
     
-    return {"message": f"{access_type} access {'enabled' for 'disabled'} for {len(participant_ids)} participants"}
+    status_text = "enabled" if enabled else "disabled"
+    return {"message": f"{access_type} access {status_text} for {len(participant_ids)} participants"}
 
 # Coordinator Control Routes
 @api_router.post("/sessions/{session_id}/release-pre-test")
