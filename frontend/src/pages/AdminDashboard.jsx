@@ -78,6 +78,19 @@ const AdminDashboard = ({ user, onLogout }) => {
   });
   const [sessionDialogOpen, setSessionDialogOpen] = useState(false);
   const [editingSession, setEditingSession] = useState(null);
+
+  
+  // Reports Archive states
+  const [allReports, setAllReports] = useState([]);
+  const [loadingReports, setLoadingReports] = useState(false);
+  const [reportsSearch, setReportsSearch] = useState("");
+  const [filterCompany, setFilterCompany] = useState("all");
+  const [filterProgram, setFilterProgram] = useState("all");
+  const [filterStartDate, setFilterStartDate] = useState("");
+  const [filterEndDate, setFilterEndDate] = useState("");
+  const [selectedReport, setSelectedReport] = useState(null);
+  const [reportDetailsOpen, setReportDetailsOpen] = useState(false);
+
   
   // Password reset states
   const [resetPasswordUser, setResetPasswordUser] = useState(null);
