@@ -231,8 +231,8 @@ const AdminDashboard = ({ user, onLogout }) => {
   const handleCreateSession = async (e) => {
     e.preventDefault();
     
-    if (sessionForm.participants.length === 0) {
-      toast.error("Please add at least one participant");
+    if (sessionForm.participant_ids.length === 0) {
+      toast.error("Please select at least one participant");
       return;
     }
 
@@ -243,44 +243,6 @@ const AdminDashboard = ({ user, onLogout }) => {
         return;
       }
 
-      const participantIds = [];
-      for (const participant of sessionForm.participants) {
-        try {
-          const response = await axiosInstance.post("/auth/register", {
-            ...participant,
-            role: "participant",
-            company_id: sessionForm.company_id,
-            location: sessionForm.location,
-          });
-          participantIds.push(response.data.id);
-        } catch (error) {
-          toast.error(`Failed to create participant ${participant.full_name}: ${error.response?.data?.detail || 'Unknown error'}`);
-          return;
-        }
-      }
-
-      // Create supervisor if provided (optional - won't block session creation)
-      let supervisorId = null;
-      if (sessionForm.supervisor.email && sessionForm.supervisor.password && sessionForm.supervisor.full_name) {
-        try {
-          const supervisorResponse = await axiosInstance.post("/auth/register", {
-            email: sessionForm.supervisor.email,
-            password: sessionForm.supervisor.password,
-            full_name: sessionForm.supervisor.full_name,
-            role: "pic_supervisor",
-            company_id: sessionForm.company_id,
-            id_number: `SUP-${Date.now()}`, // Auto-generate ID for supervisor
-          });
-          supervisorId = supervisorResponse.data.id;
-          toast.success(`Supervisor ${sessionForm.supervisor.full_name} created successfully!`);
-        } catch (error) {
-          const errorMsg = error.response?.data?.detail || error.message;
-          console.error('Supervisor creation error:', errorMsg);
-          toast.error(`Supervisor creation failed: ${errorMsg}. Session will be created without supervisor.`);
-          // Continue creating session even if supervisor creation fails
-        }
-      }
-
       const sessionResponse = await axiosInstance.post("/sessions", {
         name: program.name,
         program_id: sessionForm.program_id,
@@ -288,27 +250,23 @@ const AdminDashboard = ({ user, onLogout }) => {
         location: sessionForm.location,
         start_date: sessionForm.start_date,
         end_date: sessionForm.end_date,
-        participant_ids: participantIds,
+        participant_ids: sessionForm.participant_ids,
         trainer_assignments: sessionForm.trainer_assignments,
         coordinator_id: sessionForm.coordinator_id || null,
-        supervisor_ids: supervisorId ? [supervisorId] : [],
+        supervisor_ids: sessionForm.supervisor_id ? [sessionForm.supervisor_id] : [],
       });
 
-      toast.success(`Session created with ${participantIds.length} participants${supervisorId ? ' and 1 supervisor' : ''}`);
+      toast.success(`Session created with ${sessionForm.participant_ids.length} participants`);
       setSessionForm({
         program_id: "",
         company_id: "",
         location: "",
         start_date: "",
         end_date: "",
-        participants: [],
+        participant_ids: [],
         trainer_assignments: [],
         coordinator_id: "",
-        supervisor: {
-          full_name: "",
-          email: "",
-          password: ""
-        }
+        supervisor_id: "",
       });
       setSessionDialogOpen(false);
       loadData();
