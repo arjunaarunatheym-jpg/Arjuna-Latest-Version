@@ -1781,33 +1781,73 @@ async def generate_ai_report(session_id: str, current_user: User = Depends(get_c
     
     # Build context for AI
     context = f"""
-Generate a professional training completion report for the following defensive driving training session:
+Generate a professional defensive driving training completion report in a structured format similar to official training documentation.
 
-**Session Details:**
-- Program: {program.get('name', 'N/A') if program else 'N/A'}
-- Company: {company.get('name', 'N/A') if company else 'N/A'}
-- Location: {session.get('location', 'N/A')}
-- Start Date: {session.get('start_date', 'N/A')}
-- End Date: {session.get('end_date', 'N/A')}
-- Total Participants: {participant_count}
-- Attendance Rate: {total_attendance}/{participant_count}
-- Test Pass Rate: {passed_tests}/{len(test_results)} passed
+**SESSION INFORMATION:**
+Program Name: {program.get('name', 'N/A') if program else 'N/A'}
+Company: {company.get('name', 'N/A') if company else 'N/A'}
+Training Location: {session.get('location', 'N/A')}
+Training Period: {session.get('start_date', 'N/A')} to {session.get('end_date', 'N/A')}
+Total Participants: {participant_count}
+Attendance: {total_attendance} out of {participant_count} participants
+Assessment Pass Rate: {passed_tests} out of {len(test_results)} passed
 
-**Photos Provided:**
-- Group Photo: {"Yes" if training_report and training_report.get('group_photo') else "No"}
-- Theory Session Photos: {2 if training_report and training_report.get('theory_photo_1') and training_report.get('theory_photo_2') else 0}
-- Practical Session Photos: {3 if training_report and training_report.get('practical_photo_1') and training_report.get('practical_photo_2') and training_report.get('practical_photo_3') else 0}
+**DOCUMENTATION:**
+- Group Photo: {'Attached' if training_report and training_report.get('group_photo') else 'Not provided'}
+- Theory Session Photos: {2 if training_report and training_report.get('theory_photo_1') and training_report.get('theory_photo_2') else 0} photos attached
+- Practical Session Photos: {3 if training_report and training_report.get('practical_photo_1') and training_report.get('practical_photo_2') and training_report.get('practical_photo_3') else 0} photos attached
 
-Please generate a comprehensive training report with the following sections:
-1. **Executive Summary** - Brief overview of the training session
-2. **Training Overview** - Details about the program, location, and duration
-3. **Participant Engagement** - Attendance and participation analysis
-4. **Assessment Results** - Test scores and pass rates
-5. **Training Activities** - Description of theory and practical sessions (mention photos if provided)
-6. **Key Outcomes** - What participants learned and achieved
-7. **Recommendations** - Suggestions for future training improvements
+**REQUIRED REPORT STRUCTURE:**
 
-Format the report in a professional manner with clear sections and bullet points where appropriate.
+# TRAINING COMPLETION REPORT
+
+## 1. EXECUTIVE SUMMARY
+[Provide a 2-3 sentence overview of the training session]
+
+## 2. TRAINING PROGRAM DETAILS
+- Program Name: [name]
+- Training Duration: [dates]
+- Location: [location]
+- Target Audience: [company employees]
+
+## 3. TRAINING OBJECTIVES
+[List 3-4 key objectives of the defensive driving program]
+
+## 4. TRAINING DELIVERY
+**Theory Sessions:**
+[Describe theory topics covered - 2-3 sentences]
+
+**Practical Sessions:**
+[Describe hands-on activities and exercises - 2-3 sentences]
+
+## 5. PARTICIPANT PERFORMANCE
+- Total Enrolled: {participant_count}
+- Attendance Rate: {round((total_attendance/participant_count)*100) if participant_count > 0 else 0}%
+- Assessment Pass Rate: {round((passed_tests/len(test_results))*100) if len(test_results) > 0 else 0}%
+
+## 6. KEY LEARNING OUTCOMES
+[List 4-5 key skills/knowledge participants gained]
+- 
+- 
+- 
+
+## 7. TRAINING EFFECTIVENESS
+[Evaluate based on attendance and pass rates - 2-3 sentences]
+
+## 8. OBSERVATIONS & FEEDBACK
+[Note any significant observations about participant engagement, questions asked, areas of difficulty]
+
+## 9. RECOMMENDATIONS
+[Provide 2-3 recommendations for future training sessions]
+
+## 10. CONCLUSION
+[Summarize the overall success of the training]
+
+---
+Report Prepared By: Training Coordinator
+Date: {datetime.now(timezone.utc).strftime('%Y-%m-%d')}
+
+Please generate this report professionally with proper formatting, specific details based on the data provided, and maintain a formal tone suitable for official documentation.
 """
     
     try:
