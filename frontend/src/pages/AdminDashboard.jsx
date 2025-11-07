@@ -51,17 +51,29 @@ const AdminDashboard = ({ user, onLogout }) => {
     location: "",
     start_date: "",
     end_date: "",
-    participant_ids: [], // Changed from participants array to IDs
+    participant_ids: [], // Existing participant IDs
+    participants: [], // New participants to create/link
+    supervisors: [], // New supervisors to create/link
+    supervisor_ids: [], // Existing supervisor IDs
     trainer_assignments: [],
     coordinator_id: "",
-    supervisor_id: "", // Changed from supervisor object to ID
   });
   const [newParticipant, setNewParticipant] = useState({
     email: "",
     password: "",
     full_name: "",
     id_number: "",
+    phone_number: "",
   });
+  const [newSupervisor, setNewSupervisor] = useState({
+    email: "",
+    password: "",
+    full_name: "",
+    id_number: "",
+    phone_number: "",
+  });
+  const [participantMatchStatus, setParticipantMatchStatus] = useState(null);
+  const [supervisorMatchStatus, setSupervisorMatchStatus] = useState(null);
   const [newTrainerAssignment, setNewTrainerAssignment] = useState({
     trainer_id: "",
     role: "regular",
