@@ -395,29 +395,57 @@ const CoordinatorDashboard = ({ user, onLogout }) => {
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {sessions.map((session) => (
-                      <button
-                        key={session.id}
-                        onClick={() => selectSession(session)}
-                        className={`p-5 rounded-lg border-2 text-left transition-all ${
-                          selectedSession?.id === session.id
-                            ? 'border-indigo-500 bg-indigo-50 shadow-md'
-                            : 'border-gray-200 hover:border-indigo-300 bg-white'
-                        }`}
-                      >
-                        <h3 className="font-bold text-gray-900 text-lg">{session.name}</h3>
-                        <div className="mt-3 space-y-2">
-                          <p className="text-sm text-gray-600 flex items-center gap-2">
-                            <Calendar className="w-4 h-4" />
-                            {new Date(session.start_date).toLocaleDateString()} - {new Date(session.end_date).toLocaleDateString()}
-                          </p>
-                          <p className="text-sm text-gray-600">{session.location}</p>
-                          <p className="text-xs text-gray-500">
-                            {session.participant_ids?.length || 0} participants
-                          </p>
-                        </div>
-                      </button>
-                    ))}
+                    {sessions.map((session) => {
+                      const stats = sessionStats[session.id] || {};
+                      const participantTotal = stats.participantCount || 0;
+                      
+                      return (
+                        <button
+                          key={session.id}
+                          onClick={() => selectSession(session)}
+                          className={`p-5 rounded-lg border-2 text-left transition-all ${
+                            selectedSession?.id === session.id
+                              ? 'border-indigo-500 bg-indigo-50 shadow-md'
+                              : 'border-gray-200 hover:border-indigo-300 bg-white'
+                          }`}
+                        >
+                          <h3 className="font-bold text-gray-900 text-lg">{session.name}</h3>
+                          <div className="mt-3 space-y-2">
+                            <p className="text-sm text-gray-600 flex items-center gap-2">
+                              <Calendar className="w-4 h-4" />
+                              {new Date(session.start_date).toLocaleDateString()} - {new Date(session.end_date).toLocaleDateString()}
+                            </p>
+                            <p className="text-sm text-gray-600">{session.location}</p>
+                            
+                            {/* Stats Summary */}
+                            <div className="mt-3 pt-3 border-t space-y-1">
+                              <div className="flex justify-between items-center">
+                                <span className="text-xs text-gray-600">Participants:</span>
+                                <span className="text-xs font-semibold text-gray-900">{participantTotal}</span>
+                              </div>
+                              <div className="flex justify-between items-center">
+                                <span className="text-xs text-blue-600">Pre-Test:</span>
+                                <span className="text-xs font-semibold text-blue-700">
+                                  {stats.preTestCompleted || 0}/{participantTotal}
+                                </span>
+                              </div>
+                              <div className="flex justify-between items-center">
+                                <span className="text-xs text-green-600">Post-Test:</span>
+                                <span className="text-xs font-semibold text-green-700">
+                                  {stats.postTestCompleted || 0}/{participantTotal}
+                                </span>
+                              </div>
+                              <div className="flex justify-between items-center">
+                                <span className="text-xs text-purple-600">Feedback:</span>
+                                <span className="text-xs font-semibold text-purple-700">
+                                  {stats.feedbackCompleted || 0}/{participantTotal}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
                 </CardContent>
               </Card>
