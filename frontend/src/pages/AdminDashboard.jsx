@@ -2180,9 +2180,40 @@ const AdminDashboard = ({ user, onLogout }) => {
               </div>
 
               <div className="border-t pt-4">
-                <p className="text-sm text-gray-500 mb-2">
-                  Current Participants: {editingSession.participant_ids.length}
-                </p>
+                <h3 className="font-semibold mb-3">Current Participants ({editingSession.participant_ids.length})</h3>
+                {editingSession.participant_ids.length > 0 ? (
+                  <div className="space-y-2 max-h-60 overflow-y-auto">
+                    {editingSession.participant_ids.map((pid) => {
+                      const participant = users.find(u => u.id === pid);
+                      if (!participant) return null;
+                      return (
+                        <div key={pid} className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
+                          <div>
+                            <p className="font-medium text-sm">{participant.full_name}</p>
+                            <p className="text-xs text-gray-600">
+                              {participant.email} • ID: {participant.id_number}
+                            </p>
+                          </div>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              // Remove participant from session
+                              const updated = editingSession.participant_ids.filter(id => id !== pid);
+                              setEditingSession({ ...editingSession, participant_ids: updated });
+                              toast.success(`${participant.full_name} will be removed from this session`);
+                            }}
+                          >
+                            <Trash2 className="w-4 h-4 text-red-600" />
+                          </Button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500">No participants yet. Add some above.</p>
+                )}
               </div>
 
               <Button onClick={handleUpdateSession} className="w-full">
