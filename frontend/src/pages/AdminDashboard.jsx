@@ -263,7 +263,25 @@ const AdminDashboard = ({ user, onLogout }) => {
         }
       }
 
-      await axiosInstance.post("/sessions", {
+      // Create supervisor if provided
+      let supervisorId = null;
+      if (sessionForm.supervisor.email && sessionForm.supervisor.password && sessionForm.supervisor.full_name) {
+        try {
+          const supervisorResponse = await axiosInstance.post("/auth/register", {
+            email: sessionForm.supervisor.email,
+            password: sessionForm.supervisor.password,
+            full_name: sessionForm.supervisor.full_name,
+            role: "pic_supervisor",
+            company_id: sessionForm.company_id,
+          });
+          supervisorId = supervisorResponse.data.id;
+          toast.success(`Supervisor ${sessionForm.supervisor.full_name} created`);
+        } catch (error) {
+          toast.error(`Failed to create supervisor: ${error.response?.data?.detail || error.message}`);
+        }
+      }
+
+      const sessionResponse = await axiosInstance.post("/sessions", {
         name: program.name,
         program_id: sessionForm.program_id,
         company_id: sessionForm.company_id,
@@ -273,9 +291,10 @@ const AdminDashboard = ({ user, onLogout }) => {
         participant_ids: participantIds,
         trainer_assignments: sessionForm.trainer_assignments,
         coordinator_id: sessionForm.coordinator_id || null,
+        supervisor_ids: supervisorId ? [supervisorId] : [],
       });
 
-      toast.success(`Session created with ${participantIds.length} participants`);
+      toast.success(`Session created with ${participantIds.length} participants${supervisorId ? ' and 1 supervisor' : ''}`);
       setSessionForm({
         program_id: "",
         company_id: "",
@@ -285,6 +304,11 @@ const AdminDashboard = ({ user, onLogout }) => {
         participants: [],
         trainer_assignments: [],
         coordinator_id: "",
+        supervisor: {
+          full_name: "",
+          email: "",
+          password: ""
+        }
       });
       setSessionDialogOpen(false);
       loadData();
