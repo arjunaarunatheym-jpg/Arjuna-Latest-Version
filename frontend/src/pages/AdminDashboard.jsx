@@ -51,10 +51,8 @@ const AdminDashboard = ({ user, onLogout }) => {
     location: "",
     start_date: "",
     end_date: "",
-    participant_ids: [], // Existing participant IDs
-    participants: [], // New participants to create/link
-    supervisors: [], // New supervisors to create/link
-    supervisor_ids: [], // Existing supervisor IDs
+    participants: [], // Participants to create/link
+    supervisors: [], // Supervisors to create/link
     trainer_assignments: [],
     coordinator_id: "",
   });
