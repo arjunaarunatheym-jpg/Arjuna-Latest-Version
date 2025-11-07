@@ -2792,7 +2792,7 @@ DETAILED CHECKLIST ISSUES (items marked as 'needs_repair'):
 {chr(10).join([
     f"- {training_data['participants']['id_map'].get(detail['participant'], 'Unknown participant')}: " + 
     ", ".join([
-        f"{item.get('item', 'Unknown item')} - {item.get('comments', 'No comment')}" 
+        f"Item: '{item.get('item', 'Unknown item')}' | Issue: '{item.get('comments', 'No comment')}'" 
         for item in detail['items'] 
         if item.get('status') == 'needs_repair'
     ])
