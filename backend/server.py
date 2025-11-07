@@ -269,6 +269,33 @@ class VehicleDetailsSubmit(BaseModel):
     registration_number: str
     roadtax_expiry: str
 
+class TrainingReport(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    session_id: str
+    coordinator_id: str
+    group_photo: Optional[str] = None
+    theory_photo_1: Optional[str] = None
+    theory_photo_2: Optional[str] = None
+    practical_photo_1: Optional[str] = None
+    practical_photo_2: Optional[str] = None
+    practical_photo_3: Optional[str] = None
+    additional_notes: Optional[str] = None
+    status: str = "draft"  # draft, submitted
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    submitted_at: Optional[datetime] = None
+
+class TrainingReportCreate(BaseModel):
+    session_id: str
+    group_photo: Optional[str] = None
+    theory_photo_1: Optional[str] = None
+    theory_photo_2: Optional[str] = None
+    practical_photo_1: Optional[str] = None
+    practical_photo_2: Optional[str] = None
+    practical_photo_3: Optional[str] = None
+    additional_notes: Optional[str] = None
+    status: str = "draft"
+
 class Attendance(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
