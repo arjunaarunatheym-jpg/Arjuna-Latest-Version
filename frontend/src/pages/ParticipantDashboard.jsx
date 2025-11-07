@@ -204,10 +204,13 @@ const ParticipantDashboard = ({ user, onLogout }) => {
       const response = await axiosInstance.get(`/vehicle-details/${sessionId}/${user.id}`);
       if (response.data) {
         setVehicleDetails(prev => ({ ...prev, [sessionId]: response.data }));
+        setHasVehicleDetails(true);
       }
     } catch (error) {
       console.error("Failed to load vehicle details");
+      setHasVehicleDetails(false);
     }
+    checkTabAccess();
   };
 
   const loadAttendanceToday = async (sessionId) => {
@@ -222,15 +225,21 @@ const ParticipantDashboard = ({ user, onLogout }) => {
           setAttendanceToday(prev => ({
             ...prev,
             [sessionId]: {
-              clock_in: !!todayAttendance.clock_in,
-              clock_out: !!todayAttendance.clock_out
+              clock_in: !!todayAttendance.clock_in_time,
+              clock_out: !!todayAttendance.clock_out_time
             }
           }));
+          setHasClockedIn(!!todayAttendance.clock_in_time);
         }
       }
     } catch (error) {
       console.error("Failed to load attendance");
     }
+    checkTabAccess();
+  };
+  
+  const checkTabAccess = () => {
+    setCanAccessAllTabs(hasVehicleDetails && hasClockedIn);
   };
 
   const handleClockIn = async (sessionId) => {
