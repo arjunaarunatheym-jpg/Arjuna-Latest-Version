@@ -1053,53 +1053,74 @@ const AdminDashboard = ({ user, onLogout }) => {
 
                         {/* Add Supervisor (Optional) */}
                         <div className="space-y-4 border-t pt-4">
-                          <h3 className="font-semibold text-lg">Add Supervisor (Optional)</h3>
-                          <p className="text-sm text-gray-600">Create a supervisor for this session to monitor attendance and view reports</p>
-                          <div className="grid grid-cols-3 gap-3">
-                            <div>
-                              <Label htmlFor="supervisor-name">Full Name</Label>
-                              <Input
-                                id="supervisor-name"
-                                value={sessionForm.supervisor.full_name}
-                                onChange={(e) => setSessionForm({
-                                  ...sessionForm,
-                                  supervisor: { ...sessionForm.supervisor, full_name: e.target.value }
-                                })}
-                                placeholder="e.g., Ali"
-                              />
-                            </div>
-                            <div>
-                              <Label htmlFor="supervisor-email">Email</Label>
-                              <Input
-                                id="supervisor-email"
-                                type="email"
-                                value={sessionForm.supervisor.email}
-                                onChange={(e) => setSessionForm({
-                                  ...sessionForm,
-                                  supervisor: { ...sessionForm.supervisor, email: e.target.value }
-                                })}
-                                placeholder="ali@company.com"
-                              />
-                            </div>
-                            <div>
-                              <Label htmlFor="supervisor-password">Password</Label>
-                              <Input
-                                id="supervisor-password"
-                                type="password"
-                                value={sessionForm.supervisor.password}
-                                onChange={(e) => setSessionForm({
-                                  ...sessionForm,
-                                  supervisor: { ...sessionForm.supervisor, password: e.target.value }
-                                })}
-                                placeholder="Password"
-                              />
-                            </div>
+                          <h3 className="font-semibold text-lg">Assign Supervisor (Optional)</h3>
+                          <p className="text-sm text-gray-600">Select existing or create new supervisor</p>
+                          
+                          <div>
+                            <Label>Select Existing Supervisor</Label>
+                            <Select
+                              value={sessionForm.supervisor_id}
+                              onValueChange={(value) => setSessionForm({...sessionForm, supervisor_id: value})}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select existing supervisor or create below" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {users.filter(u => u.role === "pic_supervisor" && u.company_id === sessionForm.company_id).map((sup) => (
+                                  <SelectItem key={sup.id} value={sup.id}>
+                                    {sup.full_name} ({sup.email})
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
                           </div>
+                          
+                          <div className="text-center text-sm text-gray-500">OR create new supervisor below</div>
                         </div>
 
                         {/* Add Participants */}
                         <div className="space-y-4 border-t pt-4">
-                          <h3 className="font-semibold text-lg">Add Participants</h3>
+                          <h3 className="font-semibold text-lg">Select Participants</h3>
+                          <p className="text-sm text-gray-600">Choose from existing participants or create new ones below</p>
+                          
+                          <div>
+                            <Label>Select Existing Participants (from same company)</Label>
+                            <div className="border rounded-lg p-3 max-h-40 overflow-y-auto space-y-2">
+                              {users.filter(u => u.role === "participant" && u.company_id === sessionForm.company_id).map((participant) => (
+                                <div key={participant.id} className="flex items-center gap-2">
+                                  <input
+                                    type="checkbox"
+                                    id={`existing-${participant.id}`}
+                                    checked={sessionForm.participant_ids.includes(participant.id)}
+                                    onChange={(e) => {
+                                      if (e.target.checked) {
+                                        setSessionForm({
+                                          ...sessionForm,
+                                          participant_ids: [...sessionForm.participant_ids, participant.id]
+                                        });
+                                      } else {
+                                        setSessionForm({
+                                          ...sessionForm,
+                                          participant_ids: sessionForm.participant_ids.filter(id => id !== participant.id)
+                                        });
+                                      }
+                                    }}
+                                    className="w-4 h-4"
+                                  />
+                                  <label htmlFor={`existing-${participant.id}`} className="text-sm cursor-pointer">
+                                    {participant.full_name} ({participant.email})
+                                  </label>
+                                </div>
+                              ))}
+                              {users.filter(u => u.role === "participant" && u.company_id === sessionForm.company_id).length === 0 && (
+                                <p className="text-sm text-gray-500">No existing participants for this company. Create below.</p>
+                              )}
+                            </div>
+                          </div>
+                          
+                          <div className="text-center text-sm text-gray-500">OR create new participant below</div>
+                          
+                          <h3 className="font-semibold text-sm text-gray-700">Create New Participant</h3>
                           <div className="grid grid-cols-2 gap-3">
                             <div>
                               <Label htmlFor="participant-name">Full Name</Label>
