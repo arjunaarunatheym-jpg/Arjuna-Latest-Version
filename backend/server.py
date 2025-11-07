@@ -1994,6 +1994,25 @@ async def submit_checklist(checklist_data: ChecklistSubmit, current_user: User =
     
     return checklist_obj
 
+@api_router.get("/checklists/participant/{participant_id}")
+async def get_participant_checklists(participant_id: str, current_user: User = Depends(get_current_user)):
+    """Get all checklists for a participant (completed by trainers)"""
+    # Allow participant themselves, trainers, coordinators, and admins
+    if current_user.role not in ["trainer", "coordinator", "admin"] and current_user.id != participant_id:
+        raise HTTPException(status_code=403, detail="Unauthorized")
+    
+    checklists = await db.vehicle_checklists.find({
+        "participant_id": participant_id
+    }, {"_id": 0}).to_list(1000)
+    
+    for checklist in checklists:
+        if isinstance(checklist.get('submitted_at'), str):
+            checklist['submitted_at'] = datetime.fromisoformat(checklist['submitted_at'])
+        if checklist.get('verified_at') and isinstance(checklist['verified_at'], str):
+            checklist['verified_at'] = datetime.fromisoformat(checklist['verified_at'])
+    
+    return checklists
+
 @api_router.get("/vehicle-checklists/{session_id}/{participant_id}")
 async def get_checklist(session_id: str, participant_id: str, current_user: User = Depends(get_current_user)):
     # Allow trainer, coordinator, admin, or the participant themselves
