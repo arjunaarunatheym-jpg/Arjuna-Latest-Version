@@ -1238,10 +1238,23 @@ const AdminDashboard = ({ user, onLogout }) => {
                           
                           <div className="text-center text-sm text-gray-500">OR create new participant below</div>
                           
-                          <h3 className="font-semibold text-sm text-gray-700">Create New Participant</h3>
+                          <h3 className="font-semibold text-sm text-gray-700">Add Participant</h3>
+                          
+                          {/* Match Status Indicator */}
+                          {participantMatchStatus?.exists && (
+                            <div className="bg-blue-50 border border-blue-200 rounded-md p-3 text-sm">
+                              <p className="font-semibold text-blue-800">✓ Existing participant found</p>
+                              <p className="text-blue-600 mt-1">
+                                {participantMatchStatus.user.full_name} ({participantMatchStatus.user.email})
+                                <br />
+                                Will be linked to this session and data will be updated.
+                              </p>
+                            </div>
+                          )}
+
                           <div className="grid grid-cols-2 gap-3">
                             <div>
-                              <Label htmlFor="participant-name">Full Name</Label>
+                              <Label htmlFor="participant-name">Full Name *</Label>
                               <Input
                                 id="participant-name"
                                 data-testid="participant-name-input"
@@ -1251,7 +1264,7 @@ const AdminDashboard = ({ user, onLogout }) => {
                               />
                             </div>
                             <div>
-                              <Label htmlFor="participant-id">ID Number</Label>
+                              <Label htmlFor="participant-id">ID Number *</Label>
                               <Input
                                 id="participant-id"
                                 data-testid="participant-id-input"
@@ -1261,7 +1274,7 @@ const AdminDashboard = ({ user, onLogout }) => {
                               />
                             </div>
                             <div>
-                              <Label htmlFor="participant-email">Email</Label>
+                              <Label htmlFor="participant-email">Email *</Label>
                               <Input
                                 id="participant-email"
                                 data-testid="participant-email-input"
@@ -1272,7 +1285,18 @@ const AdminDashboard = ({ user, onLogout }) => {
                               />
                             </div>
                             <div>
-                              <Label htmlFor="participant-password">Password</Label>
+                              <Label htmlFor="participant-phone">Phone Number</Label>
+                              <Input
+                                id="participant-phone"
+                                data-testid="participant-phone-input"
+                                type="tel"
+                                value={newParticipant.phone_number}
+                                onChange={(e) => setNewParticipant({ ...newParticipant, phone_number: e.target.value })}
+                                placeholder="+1234567890"
+                              />
+                            </div>
+                            <div className="col-span-2">
+                              <Label htmlFor="participant-password">Password *</Label>
                               <Input
                                 id="participant-password"
                                 data-testid="participant-password-input"
@@ -1291,7 +1315,7 @@ const AdminDashboard = ({ user, onLogout }) => {
                             className="w-full"
                           >
                             <Plus className="w-4 h-4 mr-2" />
-                            Add Participant to List
+                            {participantMatchStatus?.exists ? "Link Existing Participant" : "Add New Participant"}
                           </Button>
                         </div>
 
