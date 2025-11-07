@@ -1421,10 +1421,17 @@ async def submit_test(submission: TestSubmit, current_user: User = Depends(get_c
     correct = 0
     for i, ans in enumerate(submission.answers):
         if i < len(questions):
-            submitted_answer = int(ans)
-            correct_answer = int(questions[i]['correct_answer'])
-            if submitted_answer == correct_answer:
-                correct += 1
+            # If question_indices provided (shuffled test), use original index
+            if submission.question_indices and i < len(submission.question_indices):
+                original_idx = submission.question_indices[i]
+            else:
+                original_idx = i
+            
+            if original_idx < len(questions):
+                submitted_answer = int(ans)
+                correct_answer = int(questions[original_idx]['correct_answer'])
+                if submitted_answer == correct_answer:
+                    correct += 1
     
     score = (correct / len(questions)) * 100 if questions else 0
     passed = score >= pass_percentage
