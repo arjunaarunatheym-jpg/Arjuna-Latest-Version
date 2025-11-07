@@ -646,6 +646,34 @@ const AdminDashboard = ({ user, onLogout }) => {
     }
   };
 
+  const handleResetUserPassword = async (e) => {
+    e.preventDefault();
+    
+    if (newPasswordForm.newPassword !== newPasswordForm.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    if (newPasswordForm.newPassword.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+
+    try {
+      await axiosInstance.post("/auth/reset-password", {
+        email: resetPasswordUser.email,
+        new_password: newPasswordForm.newPassword
+      });
+      
+      toast.success(`Password reset successfully for ${resetPasswordUser.full_name}`);
+      setResetPasswordDialogOpen(false);
+      setResetPasswordUser(null);
+      setNewPasswordForm({ newPassword: "", confirmPassword: "" });
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to reset password");
+    }
+  };
+
   return (
     <div 
       className="min-h-screen"
