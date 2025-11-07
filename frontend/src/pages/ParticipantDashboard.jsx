@@ -52,10 +52,18 @@ const ParticipantDashboard = ({ user, onLogout }) => {
       loadParticipantAccess(sessionsRes.data);
       
       // Load vehicle details and attendance for each session
-      sessionsRes.data.forEach(session => {
-        loadVehicleDetails(session.id);
-        loadAttendanceToday(session.id);
-      });
+      if (sessionsRes.data.length > 0) {
+        const firstSession = sessionsRes.data[0];
+        await loadVehicleDetails(firstSession.id);
+        await loadAttendanceToday(firstSession.id);
+        
+        sessionsRes.data.forEach(session => {
+          if (session.id !== firstSession.id) {
+            loadVehicleDetails(session.id);
+            loadAttendanceToday(session.id);
+          }
+        });
+      }
     } catch (error) {
       toast.error("Failed to load dashboard data");
     }
