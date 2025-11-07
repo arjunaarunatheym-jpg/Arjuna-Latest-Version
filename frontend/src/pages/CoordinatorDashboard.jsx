@@ -96,6 +96,9 @@ const CoordinatorDashboard = ({ user, onLogout }) => {
       setAttendance(attendanceRes.data || []);
       setTestResults(testResultsRes.data || []);
       
+      // Load session access controls
+      await loadSessionAccess(sessionId);
+      
       // Load checklist issues
       if (sessionParticipants.length > 0) {
         await loadChecklistIssues(sessionId, sessionParticipants);
@@ -103,6 +106,32 @@ const CoordinatorDashboard = ({ user, onLogout }) => {
     } catch (error) {
       console.error("Failed to load session data", error);
       // Don't show error toast here, data might be empty initially
+    }
+  };
+
+  const loadSessionAccess = async (sessionId) => {
+    try {
+      const response = await axiosInstance.get(`/participant-access/session/${sessionId}`);
+      setSessionAccess(response.data);
+    } catch (error) {
+      console.error("Failed to load session access", error);
+      setSessionAccess([]);
+    }
+  };
+
+  const handleToggleAccess = async (accessType, enabled) => {
+    if (!selectedSession) return;
+    
+    try {
+      await axiosInstance.post(`/participant-access/session/${selectedSession.id}/toggle`, {
+        access_type: accessType,
+        enabled: enabled
+      });
+      
+      toast.success(`${accessType} ${enabled ? 'enabled' : 'disabled'} for all participants`);
+      await loadSessionAccess(selectedSession.id);
+    } catch (error) {
+      toast.error(error.response?.data?.detail || `Failed to update ${accessType} access`);
     }
   };
 
