@@ -1414,7 +1414,16 @@ async def submit_test(submission: TestSubmit, current_user: User = Depends(get_c
     pass_percentage = program_doc.get('pass_percentage', 70.0) if program_doc else 70.0
     
     questions = test_doc['questions']
-    correct = sum(1 for i, ans in enumerate(submission.answers) if i < len(questions) and ans == questions[i]['correct_answer'])
+    
+    # Ensure both are integers for comparison
+    correct = 0
+    for i, ans in enumerate(submission.answers):
+        if i < len(questions):
+            submitted_answer = int(ans)
+            correct_answer = int(questions[i]['correct_answer'])
+            if submitted_answer == correct_answer:
+                correct += 1
+    
     score = (correct / len(questions)) * 100 if questions else 0
     passed = score >= pass_percentage
     
