@@ -608,6 +608,36 @@ const AdminDashboard = ({ user, onLogout }) => {
     }
   };
 
+  const handleDeleteChecklistItem = async (templateId, itemIndex) => {
+    try {
+      const template = checklistTemplates.find(t => t.id === templateId);
+      if (!template) {
+        toast.error("Template not found");
+        return;
+      }
+      
+      // Remove the item at the specified index
+      const updatedItems = template.items.filter((_, idx) => idx !== itemIndex);
+      
+      // If no items left, delete the template
+      if (updatedItems.length === 0) {
+        await axiosInstance.delete(`/checklist-templates/${templateId}`);
+        toast.success("Last item removed. Template deleted.");
+      } else {
+        // Update template with remaining items
+        await axiosInstance.put(`/checklist-templates/${templateId}`, {
+          program_id: template.program_id,
+          items: updatedItems
+        });
+        toast.success("Checklist item deleted");
+      }
+      
+      loadChecklistTemplates();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to delete checklist item");
+    }
+  };
+
   return (
     <div 
       className="min-h-screen"
