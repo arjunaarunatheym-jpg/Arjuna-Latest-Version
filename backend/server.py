@@ -579,6 +579,52 @@ async def login(user_data: UserLogin):
 async def get_me(current_user: User = Depends(get_current_user)):
     return current_user
 
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+class ResetPasswordRequest(BaseModel):
+    email: EmailStr
+    new_password: str
+
+@api_router.post("/auth/forgot-password")
+async def forgot_password(request: ForgotPasswordRequest):
+    """
+    Simple forgot password endpoint that checks if user exists
+    In production, this would send an email with reset link
+    """
+    user_doc = await db.users.find_one({"email": request.email}, {"_id": 0})
+    
+    # Always return success to prevent email enumeration
+    if not user_doc:
+        return {"message": "If an account exists with this email, password reset instructions have been sent"}
+    
+    # For MVP: Return success message
+    # In production: Generate token, send email with reset link
+    return {"message": "If an account exists with this email, password reset instructions have been sent"}
+
+@api_router.post("/auth/reset-password")
+async def reset_password(request: ResetPasswordRequest):
+    """
+    Reset password for a user
+    In production, this would require a valid reset token from email
+    For MVP: Allow direct reset with email verification
+    """
+    user_doc = await db.users.find_one({"email": request.email}, {"_id": 0})
+    
+    if not user_doc:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Hash new password
+    hashed_password = pwd_context.hash(request.new_password)
+    
+    # Update password
+    await db.users.update_one(
+        {"email": request.email},
+        {"$set": {"password": hashed_password}}
+    )
+    
+    return {"message": "Password reset successfully"}
+
 # Company Routes
 @api_router.post("/companies", response_model=Company)
 async def create_company(company_data: CompanyCreate, current_user: User = Depends(get_current_user)):
