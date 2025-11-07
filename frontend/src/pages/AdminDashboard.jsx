@@ -166,15 +166,15 @@ const AdminDashboard = ({ user, onLogout }) => {
   };
 
   // Check if user exists for real-time feedback
-  const checkUserExists = async (full_name, email, phone_number, setMatchStatus) => {
-    if (!full_name || (!email && !phone_number)) {
+  const checkUserExists = async (full_name, email, id_number, setMatchStatus) => {
+    if (!full_name && !email && !id_number) {
       setMatchStatus(null);
       return;
     }
 
     try {
       const response = await axiosInstance.post("/users/check-exists", null, {
-        params: { full_name, email, phone_number }
+        params: { full_name, email, id_number }
       });
       
       if (response.data.exists) {
