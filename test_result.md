@@ -310,6 +310,42 @@ frontend:
         agent: "main"
         comment: "USER FEEDBACK UPDATE: Simplified matching logic from name+(email OR phone) to fullname OR email OR id_number (any single match is sufficient). Removed messy 'Select Existing Participants' checkbox section - now purely auto-detection based. Added edit/delete functionality for current participants in Edit Session dialog. Updated backend find_or_create_user and check_user_exists endpoints to use simpler OR matching. Frontend updated to check by fullname, email, or id_number. Ready for retesting."
 
+  - task: "Trainer assignment bug fix"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "BUG FIX: Fixed trainer assignment logic in /trainer-checklist/{session_id}/assigned-participants endpoint. Issue was on line 2044 - using hardcoded 'int(total_participants * 0.6)' instead of 'participants_for_chiefs' for regular trainer start index. This caused incorrect distribution (e.g., 6 participants: 1 to chief, 4 to regular, 1 missing). Changed to 'start_index = participants_for_chiefs + (regular_index * participants_per_regular)' for correct sequential assignment after chief trainers. Ready for backend testing."
+
+  - task: "Post-test review question order fix"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "BUG FIX: Fixed post-test review displaying questions in wrong order. Modified TestResult model to include 'question_indices' field. Updated submit_test endpoint to store question_indices from submission. Modified get_test_result_detail endpoint to reorder questions based on stored question_indices before returning, so review shows questions in the same shuffled order participant saw during test. This fixes the issue where grading was correct but review was showing answers mismatched to wrong questions. Ready for backend testing."
+  
+  - task: "Certificate template placeholder fix"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added missing '<<PROGRAMME NAME>>' placeholder to certificate generation replacements dictionary. Template uses two different syntaxes for program name: '«PROGRAMME NAME»' and '<<PROGRAMME NAME>>'. Both are now supported. Ready for testing with certificate generation."
+
   - task: "Forgot password functionality for all roles"
     implemented: true
     working: "NA"
