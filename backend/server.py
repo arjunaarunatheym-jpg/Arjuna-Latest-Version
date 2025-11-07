@@ -2041,7 +2041,7 @@ async def get_assigned_participants(session_id: str, current_user: User = Depend
             else:
                 participants_per_regular = participants_for_regular // total_regular if total_regular > 0 else 0
                 regular_index = regular_trainers.index(current_user.id)
-                start_index = int(total_participants * 0.6) + (regular_index * participants_per_regular)
+                start_index = participants_for_chiefs + (regular_index * participants_per_regular)
                 assigned_count = participants_per_regular
                 # Distribute remainder evenly among regulars
                 if regular_index < (participants_for_regular % total_regular):
