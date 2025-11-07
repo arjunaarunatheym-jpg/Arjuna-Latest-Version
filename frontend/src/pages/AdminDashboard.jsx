@@ -51,14 +51,10 @@ const AdminDashboard = ({ user, onLogout }) => {
     location: "",
     start_date: "",
     end_date: "",
-    participants: [],
+    participant_ids: [], // Changed from participants array to IDs
     trainer_assignments: [],
     coordinator_id: "",
-    supervisor: {
-      full_name: "",
-      email: "",
-      password: ""
-    }
+    supervisor_id: "", // Changed from supervisor object to ID
   });
   const [newParticipant, setNewParticipant] = useState({
     email: "",
