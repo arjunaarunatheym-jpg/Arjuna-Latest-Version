@@ -682,41 +682,96 @@ const ParticipantDashboard = ({ user, onLogout }) => {
           <TabsContent value="checklists">
             <Card>
               <CardHeader>
-                <CardTitle>Vehicle Checklists</CardTitle>
-                <CardDescription>Submit and track your vehicle inspection checklists</CardDescription>
+                <CardTitle>Vehicle Inspection Checklists</CardTitle>
+                <CardDescription>View checklists completed by your trainer</CardDescription>
               </CardHeader>
               <CardContent>
                 {checklists.length === 0 ? (
-                  <p className="text-gray-500 text-center py-8">No checklists submitted yet</p>
+                  <div className="text-center py-12">
+                    <ClipboardCheck className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+                    <p className="text-gray-500">No trainer checklists completed yet</p>
+                    <p className="text-sm text-gray-400 mt-2">Your trainer will inspect your vehicle and submit the checklist</p>
+                  </div>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     {checklists.map((checklist) => (
                       <div
                         key={checklist.id}
                         data-testid={`checklist-${checklist.id}`}
-                        className="p-4 bg-gray-50 rounded-lg border"
+                        className="p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200"
                       >
-                        <div className="flex justify-between items-start">
+                        <div className="flex justify-between items-start mb-4">
                           <div>
-                            <h3 className="font-semibold text-gray-900">
-                              {checklist.interval.replace("_", " ").toUpperCase()} Checklist
+                            <h3 className="font-semibold text-lg text-gray-900">
+                              Trainer Inspection
                             </h3>
                             <p className="text-sm text-gray-600">
-                              Submitted: {new Date(checklist.submitted_at).toLocaleDateString()}
+                              Completed: {new Date(checklist.submitted_at || checklist.verified_at).toLocaleDateString()}
                             </p>
                           </div>
-                          <span
-                            className={`px-3 py-1 rounded-full text-xs font-medium ${
-                              checklist.verification_status === "approved"
-                                ? "bg-green-100 text-green-800"
-                                : checklist.verification_status === "rejected"
-                                ? "bg-red-100 text-red-800"
-                                : "bg-yellow-100 text-yellow-800"
-                            }`}
-                          >
-                            {checklist.verification_status}
+                          <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            {checklist.verification_status || "Completed"}
                           </span>
                         </div>
+
+                        {/* Checklist Items */}
+                        {checklist.checklist_items && checklist.checklist_items.length > 0 && (
+                          <div className="space-y-3">
+                            <h4 className="font-semibold text-sm text-gray-700 mb-2">Inspection Results:</h4>
+                            {checklist.checklist_items.map((item, idx) => (
+                              <div key={idx} className="p-3 bg-white rounded-lg border">
+                                <div className="flex justify-between items-start">
+                                  <div className="flex-1">
+                                    <p className="font-medium text-gray-900">{item.item_name}</p>
+                                    {item.comments && (
+                                      <p className="text-sm text-gray-600 mt-1">
+                                        <span className="font-semibold">Comments:</span> {item.comments}
+                                      </p>
+                                    )}
+                                  </div>
+                                  <span
+                                    className={`px-3 py-1 rounded-full text-xs font-medium ml-3 ${
+                                      item.status === "good"
+                                        ? "bg-green-100 text-green-800"
+                                        : item.status === "satisfactory"
+                                        ? "bg-yellow-100 text-yellow-800"
+                                        : "bg-red-100 text-red-800"
+                                    }`}
+                                  >
+                                    {item.status?.toUpperCase()}
+                                  </span>
+                                </div>
+                                {item.photo && (
+                                  <div className="mt-2">
+                                    <img
+                                      src={item.photo}
+                                      alt={item.item_name}
+                                      className="w-32 h-32 object-cover rounded border"
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Areas needing attention */}
+                        {checklist.checklist_items && checklist.checklist_items.filter(item => item.status === "needs_repair").length > 0 && (
+                          <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                            <p className="font-semibold text-red-800 text-sm">
+                              ⚠️ Items Needing Attention:
+                            </p>
+                            <ul className="mt-2 space-y-1">
+                              {checklist.checklist_items
+                                .filter(item => item.status === "needs_repair")
+                                .map((item, idx) => (
+                                  <li key={idx} className="text-sm text-red-700">
+                                    • {item.item_name}
+                                  </li>
+                                ))}
+                            </ul>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
