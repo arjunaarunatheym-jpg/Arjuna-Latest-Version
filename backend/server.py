@@ -2019,15 +2019,15 @@ async def get_assigned_participants(session_id: str, current_user: User = Depend
     chief_trainers = [t['trainer_id'] for t in trainer_assignments if t.get('role') == 'chief']
     regular_trainers = [t['trainer_id'] for t in trainer_assignments if t.get('role') != 'chief']
     
-    # Chief trainers get MORE participants, regular trainers get FEWER
+    # Chief trainers get FEWER participants (supervisory role), regular trainers get MORE (do the work)
     if chief_trainers:
-        # Allocate more to chief trainers
+        # Allocate less to chief trainers (they supervise)
         total_chief = len(chief_trainers)
         total_regular = len(regular_trainers)
         
-        # Give 60% to chiefs, 40% to regulars (or all to chiefs if only chiefs)
+        # Give 30% to chiefs, 70% to regulars (chiefs supervise, regulars do hands-on work)
         if total_regular > 0:
-            participants_for_chiefs = int(total_participants * 0.6)
+            participants_for_chiefs = int(total_participants * 0.3)
             participants_for_regular = total_participants - participants_for_chiefs
             
             if current_user.id in chief_trainers:
