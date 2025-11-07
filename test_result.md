@@ -320,6 +320,8 @@ test_plan:
 agent_communication:
   - agent: "main"
     message: "Initial test state created. Delete endpoint for tests was already implemented in server.py. Frontend is already integrated and using the endpoint. Need to validate all test-related endpoints (POST, GET, DELETE) work correctly with proper authentication and data handling. Testing backend first, then will verify frontend flow."
+  - agent: "main"
+    message: "FEATURE: Implement automatic user detection and linking for session creation. Modified backend to accept participant/supervisor data instead of just IDs. Added find_or_create_user helper function that searches by name + (email OR phone), updates existing users if found, creates new if not. Added phone_number field to User model. Modified session creation endpoint to process participants/supervisors arrays and return results with is_existing flags. Added check_user_exists endpoint for real-time feedback. Frontend updated with phone_number fields, real-time user existence checking with debounce, visual feedback indicators, and success messages showing linked vs created counts. Ready for backend testing."
   - agent: "testing"
     message: "✅ COMPREHENSIVE BACKEND TESTING COMPLETED - All test management endpoints are working perfectly! Created backend_test.py with 12 comprehensive tests covering: 1) POST /api/tests (pre/post test creation), 2) GET /api/tests/program/{id} (retrieval by program), 3) DELETE /api/tests/{id} (admin deletion with proper auth). All authentication, authorization, data validation, and error handling working correctly. 12/12 tests passed including security tests (403 for non-admin, 404 for non-existent). Backend is production-ready."
   - agent: "main"
