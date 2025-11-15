@@ -149,6 +149,51 @@ const CoordinatorDashboard = ({ user, onLogout }) => {
     }
   };
 
+
+  // Load coordinator feedback template
+  const loadCoordinatorFeedbackTemplate = async () => {
+    try {
+      const response = await axiosInstance.get("/coordinator-feedback-template");
+      setCoordinatorFeedbackTemplate(response.data);
+    } catch (error) {
+      console.error("Failed to load feedback template:", error);
+    }
+  };
+
+  // Load existing coordinator feedback for session
+  const loadCoordinatorFeedback = async (sessionId) => {
+    try {
+      const response = await axiosInstance.get(`/coordinator-feedback/${sessionId}`);
+      if (response.data && response.data.responses) {
+        setCoordinatorFeedback(response.data.responses);
+        setFeedbackSubmitted(true);
+      }
+    } catch (error) {
+      console.log("No existing feedback found");
+      setFeedbackSubmitted(false);
+    }
+  };
+
+  // Submit coordinator feedback
+  const handleSubmitCoordinatorFeedback = async () => {
+    if (!selectedSession) {
+      toast.error("No session selected");
+      return;
+    }
+
+    setSubmittingFeedback(true);
+    try {
+      await axiosInstance.post(`/coordinator-feedback/${selectedSession.id}`, coordinatorFeedback);
+      toast.success("Feedback submitted successfully!");
+      setFeedbackSubmitted(true);
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to submit feedback");
+    } finally {
+      setSubmittingFeedback(false);
+    }
+  };
+
+
   const loadSessionData = async (session) => {
     try {
       // Accept session object directly instead of looking it up
