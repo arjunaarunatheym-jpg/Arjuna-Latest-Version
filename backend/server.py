@@ -2745,6 +2745,49 @@ async def upload_final_pdf_report(
         
     except Exception as e:
         logging.error(f"Failed to upload final PDF: {str(e)}")
+
+
+# Get submitted reports for supervisor
+@api_router.get("/training-reports/supervisor/sessions")
+async def get_supervisor_reports(current_user: User = Depends(get_current_user)):
+    """Get all submitted reports for sessions assigned to supervisor"""
+    
+    if current_user.role not in ["supervisor", "admin"]:
+        raise HTTPException(status_code=403, detail="Only supervisors and admins can access this")
+    
+    # Get sessions assigned to supervisor
+    if current_user.role == "supervisor":
+        sessions = await db.sessions.find({"supervisor_id": current_user.id}, {"_id": 0}).to_list(100)
+    else:
+        # Admin can see all
+        sessions = await db.sessions.find({}, {"_id": 0}).to_list(1000)
+    
+    session_ids = [s['id'] for s in sessions]
+    
+    # Get submitted reports for these sessions
+    reports = await db.training_reports.find(
+        {
+            "session_id": {"$in": session_ids},
+            "status": "submitted"
+        },
+        {"_id": 0}
+    ).to_list(100)
+    
+    # Enrich with session details
+    enriched_reports = []
+    for report in reports:
+        session = next((s for s in sessions if s['id'] == report['session_id']), None)
+        if session:
+            enriched_reports.append({
+                **report,
+                "session_name": session.get('name'),
+                "session_start_date": session.get('start_date'),
+                "session_end_date": session.get('end_date'),
+                "location": session.get('location')
+            })
+    
+    return enriched_reports
+
         raise HTTPException(status_code=500, detail=f"Failed to upload report: {str(e)}")
 
 @api_router.post("/training-reports/{session_id}/submit-final")
