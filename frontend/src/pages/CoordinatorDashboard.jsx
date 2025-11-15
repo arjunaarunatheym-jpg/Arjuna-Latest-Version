@@ -541,6 +541,63 @@ const CoordinatorDashboard = ({ user, onLogout }) => {
     }
   };
 
+
+  // Handle certificate upload for a participant
+  const handleCertificateUpload = async (participantId, file) => {
+    if (!file) return;
+    
+    // Validate file type
+    if (file.type !== 'application/pdf') {
+      toast.error("Only PDF files are allowed");
+      return;
+    }
+    
+    // Check file size (5MB max)
+    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    if (file.size > maxSize) {
+      toast.error("File size exceeds 5MB limit");
+      return;
+    }
+    
+    setUploadingCertificates(prev => ({ ...prev, [participantId]: true }));
+    
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const response = await axiosInstance.post(
+        `/certificates/upload/${selectedSession.id}/${participantId}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+      
+      toast.success("Certificate uploaded successfully!");
+      
+      // Update certificate status
+      setCertificateStatuses(prev => ({
+        ...prev,
+        [participantId]: {
+          uploaded: true,
+          url: response.data.certificate_url,
+          size: response.data.file_size_mb
+        }
+      }));
+      
+      // Reload session data to refresh status
+      await loadSessionData(selectedSession);
+      
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to upload certificate");
+    } finally {
+      setUploadingCertificates(prev => ({ ...prev, [participantId]: false }));
+    }
+  };
+
+
   // Calculate statistics
   const uniqueParticipantsWithAttendance = attendance.filter((v, i, a) => 
     a.findIndex(t => t.participant_id === v.participant_id) === i
