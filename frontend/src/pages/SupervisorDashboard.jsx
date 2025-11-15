@@ -201,6 +201,101 @@ const SupervisorDashboard = ({ user, onLogout }) => {
               </CardContent>
             </Card>
           </TabsContent>
+
+
+          {/* Attendance Tab */}
+          <TabsContent value="attendance">
+            <Card>
+              <CardHeader>
+                <CardTitle>Session Attendance</CardTitle>
+                <CardDescription>Select a session to view attendance records</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {/* Session Selector */}
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Select Session:</label>
+                    <select
+                      className="w-full p-2 border rounded-lg"
+                      value={selectedSession?.id || ''}
+                      onChange={(e) => {
+                        const session = sessions.find(s => s.id === e.target.value);
+                        setSelectedSession(session);
+                        if (session) loadAttendance(session.id);
+                      }}
+                    >
+                      <option value="">Choose a session...</option>
+                      {sessions.map((session) => (
+                        <option key={session.id} value={session.id}>
+                          {session.name} - {session.location}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Attendance List */}
+                  {selectedSession && (
+                    <div className="mt-6">
+                      <h3 className="font-semibold text-lg mb-4">Attendance Records</h3>
+                      {attendance.length === 0 ? (
+                        <p className="text-gray-500 text-center py-8">No attendance records yet</p>
+                      ) : (
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-sm">
+                            <thead className="bg-gray-50 border-b">
+                              <tr>
+                                <th className="text-left p-3 font-semibold">Participant</th>
+                                <th className="text-left p-3 font-semibold">Vehicle Details</th>
+                                <th className="text-center p-3 font-semibold">Clock In</th>
+                                <th className="text-center p-3 font-semibold">Clock Out</th>
+                                <th className="text-center p-3 font-semibold">Status</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {attendance.map((record) => (
+                                <tr key={record.id} className="border-b hover:bg-gray-50">
+                                  <td className="p-3">
+                                    <p className="font-medium">{record.participant_name}</p>
+                                    <p className="text-xs text-gray-500">{record.participant_email}</p>
+                                  </td>
+                                  <td className="p-3">
+                                    <p className="text-xs">{record.vehicle_type || 'N/A'}</p>
+                                    <p className="text-xs text-gray-500">{record.plate_number || 'N/A'}</p>
+                                  </td>
+                                  <td className="p-3 text-center">
+                                    <span className="text-green-700 font-medium">
+                                      {record.clock_in || 'N/A'}
+                                    </span>
+                                  </td>
+                                  <td className="p-3 text-center">
+                                    <span className={record.clock_out ? 'text-blue-700 font-medium' : 'text-gray-400'}>
+                                      {record.clock_out || 'Not clocked out'}
+                                    </span>
+                                  </td>
+                                  <td className="p-3 text-center">
+                                    {record.clock_out ? (
+                                      <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-medium">
+                                        Complete
+                                      </span>
+                                    ) : (
+                                      <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs font-medium">
+                                        In Progress
+                                      </span>
+                                    )}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
         </Tabs>
       </main>
     </div>
