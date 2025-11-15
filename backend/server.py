@@ -418,6 +418,7 @@ class Settings(BaseModel):
     secondary_color: str = "#6366f1"
     footer_text: str = ""
     certificate_template_url: Optional[str] = None
+    max_certificate_file_size_mb: int = 5  # Max certificate file size in MB
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class SettingsUpdate(BaseModel):
