@@ -876,6 +876,10 @@ const AdminDashboard = ({ user, onLogout }) => {
               <SettingsIcon className="w-4 h-4 mr-2" />
               Settings
             </TabsTrigger>
+            <TabsTrigger value="certificates" data-testid="certificates-tab">
+              <Award className="w-4 h-4 mr-2" />
+              Certificates
+            </TabsTrigger>
           </TabsList>
 
           {/* Programs Tab */}
