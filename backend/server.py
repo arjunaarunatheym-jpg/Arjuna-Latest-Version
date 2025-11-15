@@ -2788,8 +2788,6 @@ async def get_supervisor_reports(current_user: User = Depends(get_current_user))
     
     return enriched_reports
 
-        raise HTTPException(status_code=500, detail=f"Failed to upload report: {str(e)}")
-
 @api_router.post("/training-reports/{session_id}/submit-final")
 async def submit_final_report(session_id: str, current_user: User = Depends(get_current_user)):
     """Submit final report - converts to PDF and notifies supervisor/admin"""
