@@ -1035,8 +1035,16 @@ async def get_session_participants(session_id: str, current_user: User = Depends
 
 @api_router.put("/sessions/{session_id}")
 async def update_session(session_id: str, session_data: dict, current_user: User = Depends(get_current_user)):
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Only admins can update sessions")
+    # Allow admins to update any session, coordinators can update sessions they're assigned to
+    if current_user.role == "coordinator":
+        # Check if coordinator is assigned to this session
+        session = await db.sessions.find_one({"id": session_id}, {"_id": 0})
+        if not session:
+            raise HTTPException(status_code=404, detail="Session not found")
+        if session.get("coordinator_id") != current_user.id:
+            raise HTTPException(status_code=403, detail="You can only update sessions assigned to you")
+    elif current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Only admins and coordinators can update sessions")
     
     result = await db.sessions.update_one(
         {"id": session_id},
