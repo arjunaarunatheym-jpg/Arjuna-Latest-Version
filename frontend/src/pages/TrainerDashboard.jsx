@@ -68,6 +68,52 @@ const TrainerDashboard = ({ user, onLogout }) => {
     return assignment ? (assignment.role === "chief" ? "Chief Trainer" : "Regular Trainer") : "Trainer";
   };
 
+
+  const loadFeedbackTemplate = async () => {
+    try {
+      const response = await axiosInstance.get("/chief-trainer-feedback-template");
+      setFeedbackTemplate(response.data);
+    } catch (error) {
+      console.error("Failed to load feedback template");
+    }
+  };
+
+  const loadFeedback = async (sessionId) => {
+    try {
+      const response = await axiosInstance.get(`/chief-trainer-feedback/${sessionId}`);
+      if (response.data && response.data.responses) {
+        setFeedback(response.data.responses);
+        setFeedbackSubmitted(true);
+      } else {
+        setFeedback({});
+        setFeedbackSubmitted(false);
+      }
+    } catch (error) {
+      setFeedback({});
+      setFeedbackSubmitted(false);
+    }
+  };
+
+  const handleSubmitFeedback = async () => {
+    if (!selectedFeedbackSession) return;
+
+    setSubmittingFeedback(true);
+    try {
+      await axiosInstance.post(`/chief-trainer-feedback/${selectedFeedbackSession.id}`, feedback);
+      toast.success("Feedback submitted successfully!");
+      setFeedbackSubmitted(true);
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Failed to submit feedback");
+    } finally {
+      setSubmittingFeedback(false);
+    }
+  };
+
+  useEffect(() => {
+    loadFeedbackTemplate();
+  }, []);
+
+
   const isChiefTrainer = (session) => {
     if (!session.trainer_assignments) return false;
     const assignment = session.trainer_assignments.find(t => t.trainer_id === user.id);
