@@ -426,6 +426,7 @@ class SettingsUpdate(BaseModel):
     primary_color: Optional[str] = None
     secondary_color: Optional[str] = None
     footer_text: Optional[str] = None
+    max_certificate_file_size_mb: Optional[int] = None
 
 # ============ HELPER FUNCTIONS ============
 
