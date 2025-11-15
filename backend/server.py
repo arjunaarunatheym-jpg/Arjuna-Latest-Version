@@ -2521,24 +2521,50 @@ async def generate_docx_report(session_id: str, current_user: User = Depends(get
         
         doc.add_page_break()
         
-        # CHIEF TRAINER COMMENTS
-        doc.add_heading('8. CHIEF TRAINER COMMENTS', 1)
-        chief_comments = session.get('chief_trainer_comments')
-        if chief_comments:
-            chief_name = session.get('chief_trainer_name', 'Chief Trainer')
-            doc.add_paragraph(f"Comments by {chief_name}:", style='Heading 3')
-            doc.add_paragraph(chief_comments)
+        # COORDINATOR FEEDBACK
+        doc.add_heading('8. COORDINATOR FEEDBACK', 1)
+        coordinator_feedback = await db.coordinator_feedback.find_one({"session_id": session_id}, {"_id": 0})
+        if coordinator_feedback:
+            responses = coordinator_feedback.get('responses', {})
+            for question_id, answer in responses.items():
+                # Get question text from template
+                template = await db.feedback_templates.find_one({"id": "coordinator_feedback_template"}, {"_id": 0})
+                if template:
+                    for q in template.get('questions', []):
+                        if q.get('id') == question_id:
+                            doc.add_paragraph(f"{q.get('question')}:", style='Heading 3')
+                            if q.get('type') == 'rating':
+                                stars = '⭐' * int(answer) if isinstance(answer, (int, float)) else answer
+                                doc.add_paragraph(f"   Rating: {stars} ({answer}/{q.get('scale', 5)})")
+                            else:
+                                doc.add_paragraph(f"   {answer}")
+                            doc.add_paragraph()
         else:
-            doc.add_paragraph("[Chief trainer comments pending]")
+            doc.add_paragraph("[Coordinator feedback pending]")
         
         doc.add_page_break()
         
-        # COORDINATOR COMMENTS
-        doc.add_heading('9. COORDINATOR COMMENTS & OBSERVATIONS', 1)
-        doc.add_paragraph("[Please add your comments and observations here]")
-        doc.add_paragraph()
-        doc.add_paragraph()
-        doc.add_paragraph()
+        # CHIEF TRAINER FEEDBACK
+        doc.add_heading('9. CHIEF TRAINER FEEDBACK', 1)
+        chief_trainer_feedback = await db.chief_trainer_feedback.find_one({"session_id": session_id}, {"_id": 0})
+        if chief_trainer_feedback:
+            responses = chief_trainer_feedback.get('responses', {})
+            for question_id, answer in responses.items():
+                # Get question text from template
+                template = await db.feedback_templates.find_one({"id": "chief_trainer_feedback_template"}, {"_id": 0})
+                if template:
+                    for q in template.get('questions', []):
+                        if q.get('id') == question_id:
+                            doc.add_paragraph(f"{q.get('question')}:", style='Heading 3')
+                            if q.get('type') == 'rating':
+                                stars = '⭐' * int(answer) if isinstance(answer, (int, float)) else answer
+                                doc.add_paragraph(f"   Rating: {stars} ({answer}/{q.get('scale', 5)})")
+                            else:
+                                doc.add_paragraph(f"   {answer}")
+                            doc.add_paragraph()
+        else:
+            doc.add_paragraph("[Chief trainer feedback pending]")
+        
         doc.add_page_break()
         
         # RECOMMENDATIONS
