@@ -326,15 +326,34 @@ class AttendanceClockOut(BaseModel):
 def convert_docx_to_pdf(docx_path: Path, pdf_path: Path) -> bool:
     """Convert DOCX to PDF using LibreOffice"""
     try:
+        # Verify input file exists
+        if not docx_path.exists():
+            logging.error(f"DOCX file not found: {docx_path}")
+            return False
+        
         # Use LibreOffice in headless mode to convert DOCX to PDF
-        subprocess.run([
+        result = subprocess.run([
             'libreoffice',
             '--headless',
             '--convert-to', 'pdf',
             '--outdir', str(pdf_path.parent),
             str(docx_path)
         ], check=True, capture_output=True, timeout=30)
+        
+        # Verify output file was created
+        if not pdf_path.exists():
+            logging.error(f"PDF file was not created: {pdf_path}")
+            logging.error(f"LibreOffice output: {result.stdout.decode()}")
+            logging.error(f"LibreOffice errors: {result.stderr.decode()}")
+            return False
+        
         return True
+    except subprocess.TimeoutExpired:
+        logging.error("PDF conversion timed out after 30 seconds")
+        return False
+    except subprocess.CalledProcessError as e:
+        logging.error(f"LibreOffice conversion failed: {e.stderr.decode() if e.stderr else str(e)}")
+        return False
     except Exception as e:
         logging.error(f"PDF conversion failed: {str(e)}")
         return False
