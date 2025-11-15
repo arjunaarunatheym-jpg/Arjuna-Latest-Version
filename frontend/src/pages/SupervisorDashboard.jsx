@@ -64,14 +64,18 @@ const SupervisorDashboard = ({ user, onLogout }) => {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs defaultValue="checklists" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-8">
-            <TabsTrigger value="checklists" data-testid="checklists-tab">
-              <ClipboardCheck className="w-4 h-4 mr-2" />
-              Pending Checklists
-            </TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 mb-8">
             <TabsTrigger value="sessions" data-testid="sessions-tab">
               <Users className="w-4 h-4 mr-2" />
               My Sessions
+            </TabsTrigger>
+            <TabsTrigger value="attendance" data-testid="attendance-tab">
+              <CheckCircle className="w-4 h-4 mr-2" />
+              Attendance
+            </TabsTrigger>
+            <TabsTrigger value="checklists" data-testid="checklists-tab">
+              <ClipboardCheck className="w-4 h-4 mr-2" />
+              Checklists
             </TabsTrigger>
           </TabsList>
 
