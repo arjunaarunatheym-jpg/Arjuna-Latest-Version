@@ -150,7 +150,7 @@ const TrainerDashboard = ({ user, onLogout }) => {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs defaultValue="sessions" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-8">
+          <TabsList className="grid w-full grid-cols-3 mb-8">
             <TabsTrigger value="sessions" data-testid="sessions-tab">
               <Calendar className="w-4 h-4 mr-2" />
               My Sessions
@@ -158,6 +158,10 @@ const TrainerDashboard = ({ user, onLogout }) => {
             <TabsTrigger value="checklists" data-testid="checklists-tab">
               <ClipboardCheck className="w-4 h-4 mr-2" />
               Checklists
+            </TabsTrigger>
+            <TabsTrigger value="feedback" data-testid="feedback-tab">
+              <MessageSquare className="w-4 h-4 mr-2" />
+              Chief Trainer Feedback
             </TabsTrigger>
           </TabsList>
 
