@@ -356,6 +356,127 @@ const TrainerDashboard = ({ user, onLogout }) => {
               </CardContent>
             </Card>
           </TabsContent>
+
+
+          {/* Chief Trainer Feedback Tab */}
+          <TabsContent value="feedback">
+            <Card className="mb-6">
+              <CardHeader>
+                <CardTitle>Select Session for Feedback</CardTitle>
+                <CardDescription>Choose a session to provide chief trainer feedback</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <select
+                  value={selectedFeedbackSession?.id || ""}
+                  onChange={(e) => {
+                    const session = sessions.find(s => s.id === e.target.value);
+                    if (session) {
+                      setSelectedFeedbackSession(session);
+                      loadFeedback(session.id);
+                    }
+                  }}
+                  className="w-full p-2 border rounded-md"
+                >
+                  <option value="">Select a session...</option>
+                  {sessions.map((session) => (
+                    <option key={session.id} value={session.id}>
+                      {session.name} - {getMyRole(session)}
+                    </option>
+                  ))}
+                </select>
+              </CardContent>
+            </Card>
+
+            {selectedFeedbackSession && feedbackTemplate && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <MessageSquare className="w-5 h-5" />
+                    Chief Trainer Feedback
+                  </CardTitle>
+                  <CardDescription>
+                    Session: {selectedFeedbackSession.name} | Role: {getMyRole(selectedFeedbackSession)}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    {feedbackTemplate.questions?.map((question) => (
+                      <div key={question.id} className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700">
+                          {question.question}
+                          {question.type === 'rating' && (
+                            <span className="text-gray-500 ml-1">(Rate 1-{question.scale})</span>
+                          )}
+                        </label>
+                        {question.type === 'rating' ? (
+                          <div className="flex gap-2">
+                            {[...Array(question.scale)].map((_, i) => (
+                              <button
+                                key={i}
+                                onClick={() => setFeedback({...feedback, [question.id]: i + 1})}
+                                className={`w-10 h-10 rounded-full font-bold ${
+                                  feedback[question.id] === i + 1
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                                }`}
+                                disabled={feedbackSubmitted}
+                              >
+                                {i + 1}
+                              </button>
+                            ))}
+                          </div>
+                        ) : (
+                          <textarea
+                            value={feedback[question.id] || ''}
+                            onChange={(e) => setFeedback({...feedback, [question.id]: e.target.value})}
+                            className="w-full p-3 border rounded-md"
+                            rows={4}
+                            disabled={feedbackSubmitted}
+                            placeholder="Enter your response..."
+                          />
+                        )}
+                      </div>
+                    ))}
+                    
+                    <div className="flex items-center gap-2 mt-6 pt-6 border-t">
+                      {feedbackSubmitted ? (
+                        <div className="flex items-center gap-2">
+                          <span className="px-4 py-2 bg-green-100 text-green-800 rounded-lg text-sm font-medium">
+                            ✓ Feedback Submitted
+                          </span>
+                          <Button
+                            onClick={() => setFeedbackSubmitted(false)}
+                            variant="outline"
+                            size="sm"
+                          >
+                            Edit Feedback
+                          </Button>
+                        </div>
+                      ) : (
+                        <Button
+                          onClick={handleSubmitFeedback}
+                          disabled={submittingFeedback}
+                          className="bg-blue-600 hover:bg-blue-700"
+                        >
+                          {submittingFeedback ? "Submitting..." : "Submit Feedback"}
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {!selectedFeedbackSession && (
+              <Card>
+                <CardContent className="py-12 text-center">
+                  <MessageSquare className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+                  <p className="text-gray-600">Select a session above to provide feedback</p>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
         </Tabs>
       </main>
     </div>
