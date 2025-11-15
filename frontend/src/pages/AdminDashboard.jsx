@@ -91,6 +91,14 @@ const AdminDashboard = ({ user, onLogout }) => {
   const [selectedReport, setSelectedReport] = useState(null);
   const [reportDetailsOpen, setReportDetailsOpen] = useState(false);
 
+
+  // Certificates Repository states
+  const [allCertificates, setAllCertificates] = useState([]);
+  const [loadingCertificates, setLoadingCertificates] = useState(false);
+  const [certificatesSearch, setCertificatesSearch] = useState("");
+  const [filterCertSession, setFilterCertSession] = useState("all");
+  const [filterCertProgram, setFilterCertProgram] = useState("all");
+
   
   // Password reset states
   const [resetPasswordUser, setResetPasswordUser] = useState(null);
