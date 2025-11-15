@@ -2279,8 +2279,49 @@ async def generate_docx_report(session_id: str, current_user: User = Depends(get
         
         doc.add_page_break()
         
+        # PARTICIPANT FEEDBACK
+        doc.add_heading('6. PARTICIPANT FEEDBACK', 1)
+        if feedback_data:
+            # Calculate average star ratings
+            star_questions = []
+            text_questions = []
+            
+            # Categorize questions
+            if feedback_data:
+                for response in feedback_data[0]['responses']:
+                    if isinstance(response['answer'], int):
+                        star_questions.append(response['question'])
+                    else:
+                        text_questions.append(response['question'])
+            
+            # Display star ratings summary
+            if star_questions:
+                doc.add_paragraph("Rating Summary (5-Star Scale):", style='Heading 3')
+                for question in star_questions:
+                    ratings = [r['answer'] for fb in feedback_data for r in fb['responses'] if r['question'] == question and isinstance(r['answer'], int)]
+                    if ratings:
+                        avg_rating = sum(ratings) / len(ratings)
+                        stars = '⭐' * int(round(avg_rating))
+                        doc.add_paragraph(f"{question}: {stars} ({avg_rating:.1f}/5.0)")
+                doc.add_paragraph()
+            
+            # Display comments and suggestions
+            if text_questions:
+                doc.add_paragraph("Comments & Suggestions:", style='Heading 3')
+                for idx, fb in enumerate(feedback_data, 1):
+                    doc.add_paragraph(f"{idx}. {fb['participant_name']}", style='Heading 4')
+                    for response in fb['responses']:
+                        if not isinstance(response['answer'], int):  # Text responses
+                            doc.add_paragraph(f"   Q: {response['question']}")
+                            doc.add_paragraph(f"   A: {response['answer']}")
+                            doc.add_paragraph()
+        else:
+            doc.add_paragraph("No feedback submitted yet.")
+        
+        doc.add_page_break()
+        
         # VEHICLE INSPECTION ISSUES
-        doc.add_heading('6. VEHICLE INSPECTION ISSUES', 1)
+        doc.add_heading('7. VEHICLE INSPECTION ISSUES', 1)
         if vehicle_issues:
             for vehicle_issue in vehicle_issues:
                 doc.add_paragraph(f"{vehicle_issue['participant_name']}", style='Heading 3')
