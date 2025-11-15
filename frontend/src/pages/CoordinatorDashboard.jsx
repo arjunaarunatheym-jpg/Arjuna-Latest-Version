@@ -150,7 +150,7 @@ const CoordinatorDashboard = ({ user, onLogout }) => {
       console.log("Loading data for session:", sessionId);
       console.log("Session participant_ids:", session.participant_ids);
       
-      const [usersRes, attendanceRes, testResultsRes] = await Promise.all([
+      const [usersRes, attendanceRes, testResultsRes, feedbackRes] = await Promise.all([
         axiosInstance.get(`/users`).catch(err => {
           console.error("Failed to load users:", err);
           return { data: [] };
@@ -161,6 +161,10 @@ const CoordinatorDashboard = ({ user, onLogout }) => {
         }),
         axiosInstance.get(`/tests/results/session/${sessionId}`).catch(err => {
           console.error("Failed to load test results:", err);
+          return { data: [] };
+        }),
+        axiosInstance.get(`/feedback/session/${sessionId}`).catch(err => {
+          console.error("Failed to load feedback:", err);
           return { data: [] };
         })
       ]);
