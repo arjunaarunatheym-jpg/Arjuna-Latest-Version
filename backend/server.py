@@ -349,6 +349,7 @@ class TrainerChecklistSubmit(BaseModel):
     participant_id: str
     session_id: str
     items: List[ChecklistItem]
+    chief_trainer_comments: Optional[str] = None  # Only for chief trainers
 
 class FeedbackQuestion(BaseModel):
     question: str
