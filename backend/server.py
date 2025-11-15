@@ -2656,9 +2656,9 @@ async def get_assigned_participants(session_id: str, current_user: User = Depend
         total_chief = len(chief_trainers)
         total_regular = len(regular_trainers)
         
-        # Give 30% to chiefs, 70% to regulars (chiefs supervise, regulars do hands-on work)
+        # Give 40% to chiefs, 60% to regulars (working as a team)
         if total_regular > 0:
-            participants_for_chiefs = int(total_participants * 0.3)
+            participants_for_chiefs = int(total_participants * 0.4)
             participants_for_regular = total_participants - participants_for_chiefs
             
             if current_user.id in chief_trainers:
