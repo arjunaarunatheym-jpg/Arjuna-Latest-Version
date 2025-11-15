@@ -425,6 +425,108 @@ class SettingsUpdate(BaseModel):
     company_name: Optional[str] = None
     primary_color: Optional[str] = None
     secondary_color: Optional[str] = None
+
+
+# Coordinator and Chief Trainer Feedback Models
+class CoordinatorFeedbackTemplate(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = "coordinator_feedback_template"
+    questions: List[dict] = [
+        {
+            "id": "training_smoothness",
+            "question": "How smoothly did the training session run?",
+            "type": "rating",
+            "scale": 5
+        },
+        {
+            "id": "participant_engagement",
+            "question": "Rate the overall participant engagement level",
+            "type": "rating",
+            "scale": 5
+        },
+        {
+            "id": "logistics",
+            "question": "Were logistics (venue, equipment, timing) adequate?",
+            "type": "rating",
+            "scale": 5
+        },
+        {
+            "id": "overall_observations",
+            "question": "Please provide your overall observations about the training session",
+            "type": "text"
+        },
+        {
+            "id": "issues_identified",
+            "question": "What issues or challenges were identified during the session?",
+            "type": "text"
+        },
+        {
+            "id": "recommendations",
+            "question": "What are your recommendations for future sessions?",
+            "type": "text"
+        }
+    ]
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class ChiefTrainerFeedbackTemplate(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = "chief_trainer_feedback_template"
+    questions: List[dict] = [
+        {
+            "id": "pre_assessment",
+            "question": "What were your observations from the pre-assessment?",
+            "type": "text"
+        },
+        {
+            "id": "theory_engagement",
+            "question": "How engaged were participants during the theory session?",
+            "type": "rating",
+            "scale": 5
+        },
+        {
+            "id": "practical_performance",
+            "question": "Rate the overall practical session performance",
+            "type": "rating",
+            "scale": 5
+        },
+        {
+            "id": "challenges",
+            "question": "What challenges were encountered during training?",
+            "type": "text"
+        },
+        {
+            "id": "participant_dedication",
+            "question": "Rate participant dedication and effort",
+            "type": "rating",
+            "scale": 5
+        },
+        {
+            "id": "overall_impressions",
+            "question": "Please share your overall impressions and recommendations",
+            "type": "text"
+        }
+    ]
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class CoordinatorFeedback(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    session_id: str
+    coordinator_id: str
+    responses: dict = {}
+    submitted_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class ChiefTrainerFeedback(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    session_id: str
+    trainer_id: str
+    responses: dict = {}
+    submitted_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class FeedbackTemplateUpdate(BaseModel):
+    questions: List[dict]
+
     footer_text: Optional[str] = None
     max_certificate_file_size_mb: Optional[int] = None
 
