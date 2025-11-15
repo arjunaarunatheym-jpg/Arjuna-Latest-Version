@@ -1581,6 +1581,77 @@ const CoordinatorDashboard = ({ user, onLogout }) => {
                   </CardContent>
                 </Card>
               )}
+
+
+                  {/* Feedback Summary */}
+                  <Card className="md:col-span-2">
+                    <CardHeader>
+                      <CardTitle>Participant Feedback Summary</CardTitle>
+                      <CardDescription>All participant feedback and ratings</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {!courseFeedback || courseFeedback.length === 0 ? (
+                        <div className="text-center py-8">
+                          <MessageSquare className="w-12 h-12 mx-auto text-gray-400 mb-2" />
+                          <p className="text-gray-500">No feedback submitted yet</p>
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          {courseFeedback.map((feedback, idx) => {
+                            const participant = participants.find(p => p.id === feedback.participant_id);
+                            const starRatings = feedback.responses?.filter(r => typeof r.answer === 'number') || [];
+                            const textResponses = feedback.responses?.filter(r => typeof r.answer === 'string') || [];
+                            
+                            return (
+                              <div key={idx} className="border rounded-lg p-4 bg-purple-50">
+                                <div className="flex justify-between items-start mb-3">
+                                  <h4 className="font-semibold text-purple-900">
+                                    {participant?.full_name || 'Unknown Participant'}
+                                  </h4>
+                                  <span className="text-xs text-gray-500">
+                                    {new Date(feedback.submitted_at).toLocaleDateString()}
+                                  </span>
+                                </div>
+                                
+                                {/* Star Ratings */}
+                                {starRatings.length > 0 && (
+                                  <div className="mb-3">
+                                    <p className="text-sm font-medium text-gray-700 mb-2">Ratings:</p>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                      {starRatings.map((rating, rIdx) => (
+                                        <div key={rIdx} className="flex justify-between text-sm">
+                                          <span className="text-gray-600 text-xs">{rating.question}:</span>
+                                          <span className="text-yellow-600 font-medium">
+                                            {'⭐'.repeat(rating.answer)} ({rating.answer}/5)
+                                          </span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                                
+                                {/* Text Responses */}
+                                {textResponses.length > 0 && (
+                                  <div>
+                                    <p className="text-sm font-medium text-gray-700 mb-2">Comments:</p>
+                                    <div className="space-y-2">
+                                      {textResponses.map((response, rIdx) => (
+                                        <div key={rIdx} className="bg-white p-2 rounded border">
+                                          <p className="text-xs font-medium text-gray-700">{response.question}</p>
+                                          <p className="text-sm text-gray-900 mt-1">{response.answer}</p>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+
             </TabsContent>
           </Tabs>
         )}
